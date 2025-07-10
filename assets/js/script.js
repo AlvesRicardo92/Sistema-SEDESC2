@@ -27,7 +27,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: 'checarLogin.php',
+            url: '/../gerencias/checarLogin.php',
             async:false,
             type: 'POST',
             data: {usuario:usuario,
@@ -43,10 +43,10 @@ $(document).ready(function() {
                         }
                         else{
                             if(resultado.dados.primeiro_acesso==1){
-                                window.location.href = 'primeiro_acesso.php';
+                                window.location.href = '/../primeiro_acesso.php';
                             }
                             else{
-                                window.location.href = 'dashboard.php';
+                                window.location.href = '/../dashboard.php';
                             }
                         }
                     } else {
