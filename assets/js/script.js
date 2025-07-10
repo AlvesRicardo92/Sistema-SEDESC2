@@ -5,75 +5,63 @@ $(document).ready(function() {
         event.preventDefault();
 
         // Obtém os valores dos campos de usuário e senha (opcional para o alerta)
-        const username = $('#username').val();
-        const password = $('#password').val();
+        const usuario = $('#username').val();
+        const senha = $('#password').val();
 
-        // Exibe um alerta simples
+        // Referência para a área de mensagens
+        const $messageArea = $('#messageArea');
+
+        // Função para exibir mensagens
+        function showMessage(message, type = 'danger') {
+            $messageArea.removeClass('alert-success alert-danger alert-info alert-warning'); // Remove classes antigas
+            $messageArea.addClass('alert-' + type); // Adiciona a classe de tipo (e.g., alert-danger)
+            $messageArea.text(message); // Define o texto da mensagem
+            $messageArea.fadeIn(); // Mostra a área de mensagem com um efeito de fade
+        }
+
+        // Função para esconder mensagens
+        function hideMessage() {
+            $messageArea.fadeOut(function() {
+                $(this).text(''); // Limpa o texto após esconder
+            });
+        }
+
         $.ajax({
-            url: 'trazInfoSI.php',
+            url: 'checarLogin.php',
             async:false,
             type: 'POST',
-            data: {idSI:siNumeroAno[0],
-                   anoSI:siNumeroAno[1]},
-            dataType:'text',
-            done: function () {
-                alert("feito");
-            },
+            data: {usuario:usuario,
+                   senha:senha},
+            dataType:'json',
             success: function (resultado) {
-                //console.log("resultado " + resultado);
-                var retorno = resultado.split('|');
-                //console.log("retorno " + retorno);
-                if (Array.isArray(retorno)){
-                    if(retorno[0]>0){
-                        $('#siNumero').val(retorno[0]);
-                        $('#siData').val(retorno[1].substring(0,10));
-                        $('#resp01 option:contains("'+$.trim(retorno[3])+'")').prop('selected', true);
-                        $('#resp02 option:contains("'+$.trim(retorno[4])+'")').prop('selected', true);
-                        $('#destino option:contains("'+$.trim(retorno[5])+'")').prop('selected', true);
-                        $('#solicitante').val(retorno[6]);
-                        $('#assunto').val(retorno[7]);
-                        $('#logradouro').val(retorno[8]);
-                        $('#numEndereco').val(retorno[9]);
-                        $('#bairro').val(retorno[10]);
-                        $('#obs').val(retorno[11]);
-                        $('#anotacoes').val(retorno[12]);
-                        if(retorno[2]=="URGENCIAR"){
-                            document.getElementById("urgente").checked=true;
-                        }
-                        else if(retorno[2]=="PRIORIZAR"){
-                            document.getElementById("priorizar").checked=true;
-                        }
-                        else if(retorno[2]=="NORMAL"){
-                            document.getElementById("normal").checked=true;
-                        }
-                        $('#fecharModalPesquisa').click();
-                        if(retorno[13]===document.getElementById("iniciais").innerText){
-                            //desbloquearAlteracaoSI();
-                            alert("Mesmo usuário da criação");
+                // Verifica se a resposta contém uma mensagem
+                if (resultado && resultado.mensagem) {
+                    // Verifica se há dados para determinar sucesso ou falha
+                    if (resultado.dados && Object.keys(resultado.dados).length > 0) {
+                        if(resultado.dados.ativo==0){
+                            showMessage("Usuário desativado. Verifique com o administrador do sistema", 'danger');    
                         }
                         else{
-                            alert("Não é o mesmo usuário da criação");
+                            if(resultado.dados.primeiro_acesso==1){
+                                window.location.href = 'primeiro_acesso.php';
+                            }
+                            else{
+                                window.location.href = 'dashboard.php';
+                            }
                         }
+                    } else {
+                        // Falha: exibe a mensagem de erro
+                        showMessage(resultado.mensagem, 'danger');
                     }
-                    else{
-                        console.log("primeiro item não é >0 = " + retorno);
-                        alert("Erro ao pesquisar a SI. Verifique o console");
-                    }
+                } else {
+                    // Caso a resposta não tenha a estrutura esperada
+                    showMessage("Erro inesperado na resposta do servidor.", 'danger');
                 }
-                else{
-                    console.log("retorno não é um array = " + retorno);
-                    alert("Erro ao pesquisar a SI. Verifique o console");
-                }
-            },
-            fail: function(){
-                alert("falha");
             },
             error: function(){
-                alert("error");
+                // Lida com erros de rede ou servidor
+                showMessage("Erro ao conectar com o servidor. Tente novamente.", 'danger');
             }
         });
-
-        // Aqui você faria a validação real do login, por exemplo, enviando os dados para o servidor via AJAX
-        // Ex: $.post('processa_login.php', { username: username, password: password }, function(data) { ... });
     });
 });
