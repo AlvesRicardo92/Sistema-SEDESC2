@@ -1,6 +1,9 @@
+:root{
+    --cor-azul-padrão:#007bff;
+}
 /* Altera a cor do texto do título do formulário */
 .text-primary {
-    color: #007bff !important; /* Cor azul padrão do Bootstrap */
+    color: var(--cor-azul-padrão) !important; /* Cor azul padrão do Bootstrap */
 }
 
 /* Exemplo de mudança de cor para um item específico, se desejar */
