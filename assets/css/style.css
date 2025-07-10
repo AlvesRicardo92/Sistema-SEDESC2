@@ -1,0 +1,9 @@
+/* Altera a cor do texto do título do formulário */
+.text-primary {
+    color: #007bff !important; /* Cor azul padrão do Bootstrap */
+}
+
+/* Exemplo de mudança de cor para um item específico, se desejar */
+/* .form-label {
+    color: #6f42c1; /* Um tom de roxo para os labels */
+/* } */
