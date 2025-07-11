@@ -17,6 +17,7 @@ $(document).ready(function() {
         });
     }
 
+
     // Função para validar a senha
     function validarSenha(senha) {
         let erros = [];
@@ -50,12 +51,6 @@ $(document).ready(function() {
         const novaSenha = $('#newPassword').val();
         const confirmarSenha = $('#confirmPassword').val();
 
-        // Validação no lado do cliente
-        if (username === '') {
-            showMessage("O campo usuário não pode ser vazio.", 'danger');
-            return;
-        }
-
         if (novaSenha !== confirmarSenha) {
             showMessage("As senhas não coincidem.", 'danger');
             return;
@@ -63,13 +58,13 @@ $(document).ready(function() {
 
         const passwordValidationErrors = validarSenha(novaSenha);
         if (passwordValidationErrors.length > 0) {
-            showMessage(passwordValidationErrors.join('<br>'), 'danger');
+            showMessage(passwordValidationErrors.join(' '), 'danger');
             return;
         }
 
         // Se todas as validações passarem, envia a requisição AJAX
         $.ajax({
-            url: '/../gerencias/processa_primeiro_acesso.php', // Script PHP para processar a nova senha
+            url: 'gerencias/processa_primeiro_acesso.php', // Script PHP para processar a nova senha
             method: 'POST',
             data: {
                 novaSenha: novaSenha
@@ -82,7 +77,7 @@ $(document).ready(function() {
                         showMessage(resposta.mensagem, 'success');
                         // Redireciona para o dashboard após definir a senha
                         setTimeout(function() {
-                            window.location.href = '/../dashboard.php';
+                            window.location.href = 'dashboard.php';
                         }, 2000); // Redireciona após 2 segundos para o usuário ler a mensagem
                     } else {
                         // Falha: exibe a mensagem de erro

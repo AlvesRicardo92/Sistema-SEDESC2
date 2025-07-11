@@ -22,12 +22,12 @@
             <form id="firstAccessForm">
                 <div class="mb-3">
                     <label for="newPassword" class="form-label">Nova Senha</label>
-                    <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                    <input type="password" class="form-control" id="newPassword" name="new_password" autocomplete="off" required>
                     <small id="passwordHelp" class="form-text text-muted">Mínimo 6 caracteres, 1 maiúscula, 1 número.</small>
                 </div>
                 <div class="mb-3">
                     <label for="confirmPassword" class="form-label">Confirmar Senha</label>
-                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirm_password" autocomplete="off" required>
                 </div>
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary custom-login-button">Definir Senha</button>

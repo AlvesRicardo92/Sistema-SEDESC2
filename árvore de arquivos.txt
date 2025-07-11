@@ -1,0 +1,16 @@
+projeto/
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── primeiro_acesso_script.js
+│   │   └── script.js
+├── gerencias/
+│   └── checarLogin.php
+│   └── conexaoBanco.php
+│   └── processa_primeiro_acesso.php
+├── utils/
+│   └── cabecalho.php
+├── dashboard.php
+├── index.php
+└── primeiro_acesso.php

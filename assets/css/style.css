@@ -1,6 +1,19 @@
 :root{
     --cor-azul-padrão:#007bff;
 }
+/* Reset básico para remover margens e paddings padrão do navegador */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Garante que html e body ocupem 100% da altura da viewport */
+    overflow: hidden; /* Esconde qualquer barra de rolagem indesejada no nível do documento */
+}
+
+/* Torna o body um container flexível para gerenciar o layout vertical */
+body {
+    display: flex;
+    flex-direction: column; /* Organiza os filhos (cabeçalho e conteúdo principal) em coluna */
+}
 /* Altera a cor do texto do título do formulário */
 .text-primary {
     color: var(--cor-azul-padrão) !important; /* Cor azul padrão do Bootstrap */
@@ -9,4 +22,57 @@
     margin-right:20px;
     padding-right:20px;
     border-right: 3px solid #fff;
+}
+/* Centraliza o conteúdo principal (onde o carrossel estará) na tela */
+.main-content-wrapper {
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center;     /* Centraliza verticalmente */
+    min-height: 100vh;       /* Garante que o wrapper ocupe a altura total da viewport */
+    width: 100%;             /* Ocupa a largura total */
+    padding: 20px;           /* Adiciona um pouco de padding para não colar nas bordas */
+    box-sizing: border-box;  /* Inclui padding na largura/altura */
+}
+
+/* Limita o tamanho do carrossel em si */
+.carousel-container {
+    max-width: 800px; /* Define uma largura máxima para o carrossel (ajuste conforme necessário) */
+    width: 100%;      /* Garante que ocupe 100% da largura disponível dentro do max-width */
+    margin: auto;     /* Ajuda a centralizar em alguns contextos, embora o flexbox do wrapper já faça a maior parte */
+    /* Opcional: Adicione um background ou borda para visualizar melhor o container do carrossel */
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Opcional: Ajustar o alerta de "Nenhum aviso" para ficar centralizado também e com largura limitada */
+.alert-custom {
+    max-width: 600px; /* Limita a largura do alerta */
+    margin: 20px auto; /* Centraliza o alerta horizontalmente e adiciona margem vertical */
+}
+/* Estilos adicionais para esta página, se necessário */
+.search-fields-row {
+    margin-bottom: 20px;
+}
+.form-control-custom {
+    border-radius: 0.5rem; /* Adiciona bordas arredondadas aos campos */
+}
+.btn-custom {
+    border-radius: 0.5rem; /* Adiciona bordas arredondadas aos botões */
+}
+.table-responsive-custom {
+    margin-top: 20px;
+}
+.modal-content-custom {
+    border-radius: 0.75rem; /* Bordas arredondadas para modais */
+}
+.modal-header-custom {
+    background-color: #007bff; /* Cor de fundo para o cabeçalho do modal */
+    color: white;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+.modal-footer-custom {
+    border-bottom-left-radius: 0.75rem;
+    border-bottom-right-radius: 0.75rem;
 }

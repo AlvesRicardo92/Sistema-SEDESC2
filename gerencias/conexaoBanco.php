@@ -1,7 +1,7 @@
 <?php
 $user = "37484"; 
 $password = "Pmsbc@123"; 
-$database = "bd_sas"; 
+$database = "bd_sedesc"; 
 
 # O hostname deve ser sempre localhost 
 $hostname = "localhost"; 

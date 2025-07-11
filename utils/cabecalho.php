@@ -1,28 +1,12 @@
 <?php
 // Redireciona para a página de login se o usuário não estiver logado
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+if (!isset($_SESSION['usuario']['id'])) {
+    header('Location: index.php');
     exit();
 }
 
 $nomeCompleto = $_SESSION['usuario']['nome'] ?? 'Sem Nome';
-$permissoes = $_SESSION['usuario']['nome'] ?? '00000000000';
-
-// Função auxiliar para verificar permissão
-function hasPermission(string $permissoes, int $position): string {
-    // Garante que a string de permissões tem o comprimento necessário
-    if (isset($permissoes[$position])) {
-        return $permissoes[$position];
-    }
-    return false;
-}
-
-$canAccessProcedimentos = (int)hasPermission($permissoes, 0); // Posição 0 para Procedimentos
-$canAccessOficioRecebido = (int)hasPermission($permissoes, 1);    // Posição 1 para Ofício Recebido
-$canAccessOficioExpedido = (int)hasPermission($permissoes, 2); // Posição 2 para Ofício Expedido
-$canAccessDenuncia = (int)hasPermission($permissoes, 3); // Posição 3 para Denúncia
-$canAccessAtendimentoPresencial = (int)hasPermission($permissoes, 4); // Posição 4 para Atendimento Presencial
-$canAccessAdministracao = (int)hasPermission($permissoes, 5); // Posição 6 para Administração
+$permissoes = $_SESSION['usuario']['permissoes'] ?? '00000000000';
 
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -37,40 +21,30 @@ $canAccessAdministracao = (int)hasPermission($permissoes, 5); // Posição 6 par
                     <a class="nav-link active" aria-current="page" href="dashboard.php">Início</a>
                 </li>
 
-                <?php if ($canAccessProcedimentos>0): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="procedimentos.php">Procedimento</a>
-                </li>
-                <?php endif; ?>
-
-                <?php if ($canAccessOficioRecebido>0): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="#oficioRecebido">Ofício Recebido</a>
-                </li>
-                <?php endif; ?>
-
-                <?php if ($canAccessOficioExpedido>0): ?>
-                    <li class="nav-item">
-                    <a class="nav-link" href="#oficioExpedido">Ofício Expedido</a>
-                </li>
-                <?php endif; ?>
-
-                <?php if ($canAccessDenuncia>0): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="#denuncia">Denúncia</a>
-                </li>
-                <?php endif; ?>
-
-                <?php if ($canAccessAtendimentoPresencial>0): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="#atendimentoPresencial">Atendimento Presencial</a>
-                </li>
-                <?php endif; ?>
-                <?php if ($canAccessAdministracao>0): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="administracao.php">Administração</a>
-                </li>
-                <?php endif; ?>
+                <?php
+                    switch (true) {
+                        case (substr($permissoes, 0, 1) == "A"):                    
+                            if (substr($permissoes, 1, 1) == 1){
+                            }
+                    
+                        case (substr($permissoes, 0, 1) == "B"):
+                            if (substr($permissoes, 1, 1) == 1){
+                            }
+                        case (substr($permissoes, 0, 1) == "C"):
+                            if (substr($permissoes, 1, 1) == 1){
+                            }
+                        case (substr($permissoes, 0, 1) == "D"):
+                            if (substr($permissoes, 1, 1) == 1){
+                            }
+                        case (substr($permissoes, 0, 1) == "E"):
+                            if (substr($permissoes, 1, 1) == 1){
+                                echo '<li class="nav-item">';
+                                    echo '<a class="nav-link" href="procedimentos.php">Procedimento</a>';
+                                echo '</li>';
+                            }
+                        default:
+                    }
+                ?>
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
