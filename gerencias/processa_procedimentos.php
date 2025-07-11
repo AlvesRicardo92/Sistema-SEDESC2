@@ -1,39 +1,119 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// Simula um banco de dados de procedimentos
-$procedimentos_db = [
-    [
-        "id" => 1,
-        "numero_procedimento" => "001",
-        "ano_procedimento" => "2023",
-        "numero_ano" => "001/2023",
-        "bairro" => "Centro",
-        "territorio_bairro" => "Zona Urbana",
-        "nome_pessoa" => "Maria Silva",
-        "data_nascimento_pessoa" => "1990-05-15",
-        "sexo_pessoa" => "Feminino",
-        "nome_genitora" => "Ana Silva",
-        "data_nascimento_genitora" => "1970-01-20",
-        "sexo_genitora" => "Feminino",
-        "demandante" => "João Souza"
-    ],
-    [
-        "id" => 2,
-        "numero_procedimento" => "002",
-        "ano_procedimento" => "2024",
-        "numero_ano" => "002/2024",
-        "bairro" => "Vila Nova",
-        "territorio_bairro" => "Zona Rural",
-        "nome_pessoa" => "Pedro Santos",
-        "data_nascimento_pessoa" => "2000-11-22",
-        "sexo_pessoa" => "Masculino",
-        "nome_genitora" => "Carla Santos",
-        "data_nascimento_genitora" => "1975-03-10",
-        "sexo_genitora" => "Feminino",
-        "demandante" => "Prefeitura"
-    ]
-];
+require "conexaoBanco.php";
+
+if(!isset($_POST['acao'])||!isset($_POST['tipo'])){
+    return ["mensagem" => "Nenhuma ação ou tipo especificado.", "dados" => []];
+}
+else{
+    $acao = $mysqli -> real_escape_string($_POST['acao']);
+    $tipo = $mysqli -> real_escape_string($_POST['tipo']);
+}
+
+if($acao==="buscar"){
+    $parametroBusca= $mysqli->real_escape_string($_POST['parametroBusca']);
+    $procedimentosEncontrados = [];
+    $sql="SELECT
+            proc.id AS 'id',
+            proc.numero_procedimento AS 'numero',
+            proc.ano_procedimento AS 'ano',
+            t.nome AS 'territorio',
+            b.nome AS 'bairro',
+            p.nome AS 'nome_pessoa',
+            p.data_nascimento AS 'nascimento_pessoa',
+            sp.nome AS 'sexo_pessoa',
+            g.nome AS 'nome_genitora',
+            g.data_nascimento AS 'nascimento_genitora',
+            sg.nome AS 'sexo_genitora',
+            d.nome AS 'demandante',
+            proc.ativo AS 'ativo',
+            proc.migrado AS 'migrado',
+            m.numero_novo AS 'numero_novo',
+            m.ano_novo AS 'ano_novo',
+            m.territorio_novo AS 'territorio_novo'
+        FROM
+            procedimentos proc
+        LEFT JOIN
+            territorios_ct t ON t.id = proc.id_territorio
+        LEFT JOIN
+            bairros b ON b.id = proc.id_bairro
+        LEFT JOIN
+            pessoas p ON p.id = proc.id_pessoa
+        LEFT JOIN
+            pessoas g ON g.id = proc.id_pessoa
+        LEFT JOIN
+            demandantes d ON d.id = proc.id_demandante
+        LEFT JOIN
+            migracoes m ON m.id = proc.id_migracao
+        LEFT JOIN
+            sexos sp ON sp.id = p.id_sexo
+        LEFT JOIN
+            sexos sg ON sg.id = g.id_sexo
+        WHERE ";
+    $whereQuery="";
+    $binds="";
+    $variavel="";
+
+    if($tipo=="numero"){
+        $whereQuery='numero_procedimento =?';
+        $binds="i";
+        $variavel=$parametroBusca;
+    }
+    if($tipo=="nome"){
+        $whereQuery='nome_pessoa =?';
+        $binds="s";
+        $variavel= 'like %' . $parametroBusca . '%';
+    }
+    if($tipo=="genitora"){
+        $whereQuery='nome_genitora like ?';
+        $binds="s";
+        $variavel= '%' . $parametroBusca . '%';
+    }
+    if($tipo=="nascimento"){
+        $whereQuery='nascimento =?';
+        $binds="s";
+        $variavel= $parametroBusca;
+    }
+    echo $whereQuery;
+    echo $binds;
+    echo $variavel;
+    exit();
+
+    $stmt = $mysqli->prepare($sql . $whereQuery . ' ORDER BY ano DESC and numero DESC');
+    $stmt -> bind_param($binds, $variavel);
+
+    if ($stmt->execute()) {
+        $resultado = $stmt->get_result();
+        $linhas = $resultado ->num_rows;
+        if($linhas > 0){
+            while($row = $resultado->fetch_assoc()) {
+                $token = bin2hex(random_bytes(32));
+                $procedimentosEncontrados[] = [
+                    'numero' => $row['numero'],
+                    'ano' => $row['ano'],
+                    'nome_pessoa' => $row['nome_pessoa'],
+                    'nascimento_pessoa' => $row['nascimento_pessoa'],
+                    'nome_genitora' => $row['nome_genitora'],
+                    'token'=>$token
+                ];
+                $_SESSION['tokens'][$token] = $row['id'];
+            }
+            echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+        }
+        else{
+            echo json_encode(['mensagem' => 'Nenhum resultado para a busca', 'dados' => []]);
+        }
+    }
+    $stmt->close();
+    $mysqli->close();
+}
+
+
+
+
+
+
 
 // Lógica para adicionar, atualizar e excluir procedimentos (simulado)
 // Em um ambiente real, você usaria um banco de dados

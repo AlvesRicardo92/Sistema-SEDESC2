@@ -24,14 +24,39 @@ $(document).ready(function() {
     $searchGenitora.on('input', function() { clearOtherSearchFields($(this)); });
     $searchNascimento.on('input', function() { clearOtherSearchFields($(this)); });
 
+
+    $('#btnProcurar').on('click', function() {
+        var parametroBusca ='';
+        var tipo='';
+        if ($searchNumero.val()!=""){
+            parametroBusca=$searchNumero.val();
+            tipo='numero';
+        }
+        else if ($searchNome.val()!=""){
+            parametroBusca=$searchNome.val();
+            tipo='nome';
+        }
+        else if ($searchGenitora.val()!=""){
+            parametroBusca=$searchGenitora.val();
+            tipo='genitora';
+        }
+        else if ($searchNascimento.val()!=""){
+            parametroBusca=$searchNascimento.val();
+            tipo='nascimento';
+        }
+        loadProcedimentos(parametroBusca);
+    });
     // Função para carregar dados na tabela via AJAX
-    function loadProcedimentos(searchParams = {}) {
+    function loadProcedimentos(parametroBusca = "", tipo="") {
         $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Carregando procedimentos...</td></tr>');
-        
+
         $.ajax({
-            url: 'gerencias/processa_procedimentos.php', // Seu script PHP para buscar dados
-            method: 'POST', // Ou POST, dependendo da sua API
-            data: searchParams,
+            url: 'gerencias/processa_procedimentos.php',
+            method: 'POST', 
+            data: {parametroBusca:parametroBusca,
+                    acao:"buscar",
+                    tipo:tipo
+                },
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso" && response.dados.length > 0) {
@@ -39,14 +64,14 @@ $(document).ready(function() {
                     response.dados.forEach(procedimento => {
                         tableRows += `
                             <tr>
-                                <td>${procedimento.numero_ano}</td>
+                                <td>${procedimento.numero}/${procedimento.ano}</td>
                                 <td>${procedimento.nome_pessoa}</td>
+                                <td>${procedimento.nascimento_pessoa}</td>
                                 <td>${procedimento.nome_genitora}</td>
-                                <td>${procedimento.data_nascimento_pessoa}</td>
                                 <td>
-                                    <button type="button" class="btn btn-info btn-sm me-1 btn-visualizar" data-id="${procedimento.id}">Visualizar</button>
-                                    <button type="button" class="btn btn-warning btn-sm me-1 btn-editar" data-id="${procedimento.id}">Editar</button>
-                                    <button type="button" class="btn btn-danger btn-sm btn-excluir" data-id="${procedimento.id}">Excluir</button>
+                                    <button type="button" class="btn btn-info btn-sm me-1 btn-visualizar" data-token="${procedimento.token}">Visualizar</button>
+                                    <button type="button" class="btn btn-warning btn-sm me-1 btn-editar" data-token="${procedimento.token}">Editar</button>
+                                    <button type="button" class="btn btn-danger btn-sm btn-excluir" data-token="${procedimento.token}">Excluir</button>
                                 </td>
                             </tr>
                         `;
@@ -63,20 +88,21 @@ $(document).ready(function() {
     }
 
     // Evento para o botão "Procurar"
-    $('#btnProcurar').on('click', function() {
-        const searchParams = {
-            numero: $searchNumero.val(),
-            nome: $searchNome.val(),
-            genitora: $searchGenitora.val(),
-            nascimento: $searchNascimento.val()
-        };
-        loadProcedimentos(searchParams);
-    });
+    //$('#btnProcurar').on('click', function() {
+    //    const searchParams = {
+    //        numero: $searchNumero.val(),
+    //        nome: $searchNome.val(),
+    //        genitora: $searchGenitora.val(),
+    //        nascimento: $searchNascimento.val()
+    //    };
+    //    loadProcedimentos(searchParams);
+    //});
+    
 
     // Lógica para Modais (Visualizar, Editar, Excluir)
     // Usar delegação de eventos para botões dentro da tabela
     $procedimentosTableBody.on('click', '.btn-visualizar', function() {
-        const id = $(this).data('id');
+        const id = $(this).data('token');
         // Simular busca de dados do procedimento por ID
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
