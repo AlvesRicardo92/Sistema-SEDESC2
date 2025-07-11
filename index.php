@@ -1,3 +1,13 @@
+<?php
+session_start();
+// Redireciona para a página de login se o usuário não estiver logado
+/*if (isset($_SESSION['usuario']['id'])) {
+    header('Location: dashboard.php');
+    exit();
+}*/
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>

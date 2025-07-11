@@ -27,10 +27,10 @@ $(document).ready(function() {
     // Função para carregar dados na tabela via AJAX
     function loadProcedimentos(searchParams = {}) {
         $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Carregando procedimentos...</td></tr>');
-
+        
         $.ajax({
             url: 'gerencias/processa_procedimentos.php', // Seu script PHP para buscar dados
-            method: 'GET', // Ou POST, dependendo da sua API
+            method: 'POST', // Ou POST, dependendo da sua API
             data: searchParams,
             dataType: 'json',
             success: function(response) {
