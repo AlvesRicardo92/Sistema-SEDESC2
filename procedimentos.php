@@ -66,9 +66,10 @@ if (!isset($_SESSION['usuario']['id'])) {
                 <thead class="table-dark">
                     <tr>
                         <th>Número/Ano</th>
+                        <th>Território</th>
                         <th>Nome</th>
-                        <th>Genitora</th>
                         <th>Nascimento</th>
+                        <th>Genitora</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -84,7 +85,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     <!-- Modais -->
 
     <!-- Modal Visualizar -->
-    <div class="modal fade" id="visualizarModal" tabindex="-1" aria-labelledby="visualizarModalLabel" aria-hidden="true">
+    <div class="modal fade" id="visualizarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="visualizarModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-custom">
@@ -96,56 +97,61 @@ if (!isset($_SESSION['usuario']['id'])) {
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="viewNumeroProcedimento" class="form-label">Número Procedimento</label>
-                                <input type="text" class="form-control" id="viewNumeroProcedimento" readonly>
+                                <input type="text" class="form-control" id="viewNumeroProcedimento" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="viewAnoProcedimento" class="form-label">Ano Procedimento</label>
-                                <input type="text" class="form-control" id="viewAnoProcedimento" readonly>
+                                <input type="text" class="form-control" id="viewAnoProcedimento" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="viewBairro" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="viewBairro" readonly>
+                                <input type="text" class="form-control" id="viewBairro" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="viewTerritorioBairro" class="form-label">Território Bairro</label>
-                                <input type="text" class="form-control" id="viewTerritorioBairro" readonly>
+                                <input type="text" class="form-control" id="viewTerritorioBairro" disabled>
+                            </div>
+                        </div>
+                        <div class="separador-horizontal"><strong>Pessoa</strong></div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="viewNomePessoa" class="form-label">Nome Pessoa</label>
+                                <input type="text" class="form-control" id="viewNomePessoa" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="viewNomePessoa" class="form-label">Nome Pessoa</label>
-                                <input type="text" class="form-control" id="viewNomePessoa" readonly>
-                            </div>
                             <div class="col-md-6">
                                 <label for="viewDataNascimentoPessoa" class="form-label">Data Nascimento Pessoa</label>
-                                <input type="date" class="form-control" id="viewDataNascimentoPessoa" readonly>
+                                <input type="date" class="form-control" id="viewDataNascimentoPessoa" disabled>
                             </div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="viewSexoPessoa" class="form-label">Sexo Pessoa</label>
-                                <input type="text" class="form-control" id="viewSexoPessoa" readonly>
+                                <input type="text" class="form-control" id="viewSexoPessoa" disabled>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="separador-horizontal"><strong>Genitora</strong></div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
                                 <label for="viewNomeGenitora" class="form-label">Nome Genitora</label>
-                                <input type="text" class="form-control" id="viewNomeGenitora" readonly>
+                                <input type="text" class="form-control" id="viewNomeGenitora" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="viewDataNascimentoGenitora" class="form-label">Data Nascimento Genitora</label>
-                                <input type="date" class="form-control" id="viewDataNascimentoGenitora" readonly>
+                                <input type="date" class="form-control" id="viewDataNascimentoGenitora" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="viewSexoGenitora" class="form-label">Sexo Genitora</label>
-                                <input type="text" class="form-control" id="viewSexoGenitora" readonly>
+                                <input type="text" class="form-control" id="viewSexoGenitora" disabled>
                             </div>
                         </div>
+                        <div class="separador-horizontal"><strong>Demandante</strong></div>
                         <div class="mb-3">
                             <label for="viewDemandante" class="form-label">Demandante</label>
-                            <input type="text" class="form-control" id="viewDemandante" readonly>
+                            <input type="text" class="form-control" id="viewDemandante" disabled>
                         </div>
                     </form>
                 </div>

@@ -87,3 +87,23 @@ body {
     /* No explicit height or overflow: hidden needed here, let browser handle scrolling */
     padding-bottom: 20px; /* Add some padding at the bottom if needed */
 }
+.separador-horizontal {
+    display: flex;
+    align-items: center;
+    text-align: left;
+  }
+  
+  .separador-horizontal::before,
+  .separador-horizontal::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #000;
+  }
+  
+  .separador-horizontal:not(:empty)::before {
+    margin-right: .25em;
+  }
+  
+  .separador-horizontal:not(:empty)::after {
+    margin-left: .25em;
+  }

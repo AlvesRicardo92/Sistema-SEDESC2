@@ -1,18 +1,24 @@
 <?php
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 require "conexaoBanco.php";
 
-if(!isset($_POST['acao'])||!isset($_POST['tipo'])){
-    return ["mensagem" => "Nenhuma ação ou tipo especificado.", "dados" => []];
+if(!isset($_POST['acao'])){
+    return ["mensagem" => "Nenhuma ação especificada.", "dados" => []];
 }
 else{
     $acao = $mysqli -> real_escape_string($_POST['acao']);
-    $tipo = $mysqli -> real_escape_string($_POST['tipo']);
 }
 
 if($acao==="buscar"){
-    $parametroBusca= $mysqli->real_escape_string($_POST['parametroBusca']);
+    if(!isset($_POST['tipo'])|| !isset($_POST['parametroBusca'])){
+        return ["mensagem" => "Nenhum tipo ou parâmetro especificado.", "dados" => []];
+    }
+    else{
+        $tipo = $mysqli -> real_escape_string($_POST['tipo']);
+        $parametroBusca= $mysqli->real_escape_string($_POST['parametroBusca']);
+    }
     $procedimentosEncontrados = [];
     $sql="SELECT
             proc.id AS 'id',
@@ -41,7 +47,7 @@ if($acao==="buscar"){
         LEFT JOIN
             pessoas p ON p.id = proc.id_pessoa
         LEFT JOIN
-            pessoas g ON g.id = proc.id_pessoa
+            pessoas g ON g.id = proc.id_genitora_pessoa
         LEFT JOIN
             demandantes d ON d.id = proc.id_demandante
         LEFT JOIN
@@ -75,10 +81,9 @@ if($acao==="buscar"){
         $binds="s";
         $variavel= $parametroBusca;
     }
-
-    /*echo $sql . $whereQuery . ' ORDER BY ano DESC, numero DESC'.'<br><br><br>';
-    echo $variavel;
-    exit();*/
+    if($_SESSION['usuario']['territorio']<4){
+        $whereQuery+=' AND proc.id_territorio =' . $_SESSION['usuario']['territorio'];
+    }
     $stmt = $mysqli->prepare($sql . $whereQuery . ' ORDER BY ano DESC, numero DESC');
     $stmt -> bind_param($binds, $variavel);
 
@@ -91,6 +96,7 @@ if($acao==="buscar"){
                 $procedimentosEncontrados[] = [
                     'numero' => $row['numero'],
                     'ano' => $row['ano'],
+                    'territorio' => $row['territorio'],
                     'nome_pessoa' => $row['nome_pessoa'],
                     'nascimento_pessoa' => $row['nascimento_pessoa'],
                     'nome_genitora' => $row['nome_genitora'],
@@ -99,17 +105,188 @@ if($acao==="buscar"){
                 $_SESSION['tokens'][$token] = $row['id'];
             }
             echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+            $stmt->close();
+            $mysqli->close();
             exit();
         }
         else{
             echo json_encode(['mensagem' => 'Nenhum resultado para a busca', 'dados' => []]);
+            $stmt->close();
+            $mysqli->close();
             exit();
         }
     }
-    $stmt->close();
-    $mysqli->close();
 }
+if($acao==="visualizar"){
+    if(!isset($_POST['token'])){
+        return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+    }
+    else{
+        $token = $_POST['token'];
+        if(!isset($_SESSION['tokens'][$token])){
+            return ["mensagem" => "Procedimento não localizado.", "dados" => []];
+        }
+        else{
+            $idProcedimento =$_SESSION['tokens'][$token];
+            $sql="SELECT
+                proc.id AS 'id',
+                proc.numero_procedimento AS 'numero',
+                proc.ano_procedimento AS 'ano',
+                t.nome AS 'territorio',
+                b.nome AS 'bairro',
+                p.nome AS 'nome_pessoa',
+                p.data_nascimento AS 'nascimento_pessoa',
+                sp.nome AS 'sexo_pessoa',
+                g.nome AS 'nome_genitora',
+                g.data_nascimento AS 'nascimento_genitora',
+                sg.nome AS 'sexo_genitora',
+                d.nome AS 'demandante',
+                proc.ativo AS 'ativo',
+                proc.migrado AS 'migrado',
+                m.numero_novo AS 'numero_novo',
+                m.ano_novo AS 'ano_novo',
+                m.territorio_novo AS 'territorio_novo'
+            FROM
+                procedimentos proc
+            LEFT JOIN
+                territorios_ct t ON t.id = proc.id_territorio
+            LEFT JOIN
+                bairros b ON b.id = proc.id_bairro
+            LEFT JOIN
+                pessoas p ON p.id = proc.id_pessoa
+            LEFT JOIN
+                pessoas g ON g.id = proc.id_genitora_pessoa
+            LEFT JOIN
+                demandantes d ON d.id = proc.id_demandante
+            LEFT JOIN
+                migracoes m ON m.id = proc.id_migracao
+            LEFT JOIN
+                sexos sp ON sp.id = p.id_sexo
+            LEFT JOIN
+                sexos sg ON sg.id = g.id_sexo
+            WHERE proc.id = ?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt -> bind_param('i', $idProcedimento);
 
+            if ($stmt->execute()) {
+                $resultado = $stmt->get_result();
+                $linhas = $resultado ->num_rows;
+                if($linhas > 0){
+                    while($row = $resultado->fetch_assoc()) {
+                        $procedimentosEncontrados[] = [
+                            'numero' => $row['numero'],
+                            'ano' => $row['ano'],
+                            'bairro' => $row['bairro'],
+                            'territorio' => $row['territorio'],
+                            'nome_pessoa' => $row['nome_pessoa'],
+                            'nascimento_pessoa' => $row['nascimento_pessoa'],
+                            'sexo_pessoa' => $row['sexo_pessoa'],
+                            'nome_genitora' => $row['nome_genitora'],
+                            'nascimento_genitora' => $row['nascimento_genitora'],
+                            'sexo_genitora' => $row['sexo_genitora'],
+                            'demandante' => $row['demandante']
+                        ];
+                    }
+                    echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+                    $stmt->close();
+                    $mysqli->close();
+                    exit();
+                }
+                else{
+                    echo json_encode(['mensagem' => 'Nenhum resultado para a busca', 'dados' => []]);
+                    $stmt->close();
+                    $mysqli->close();
+                    exit();
+                }
+            }   
+        }
+    }
+}
+if($acao==="editar"){
+    if(!isset($_POST['token'])){
+        return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+    }
+    else{
+        $token = $_POST['token'];
+        if(!isset($_SESSION['tokens'][$token])){
+            return ["mensagem" => "Procedimento não localizado.", "dados" => []];
+        }
+        else{
+            $idProcedimento =$_SESSION['tokens'][$token];
+            $sql="SELECT
+                proc.id AS 'id',
+                proc.numero_procedimento AS 'numero',
+                proc.ano_procedimento AS 'ano',
+                t.nome AS 'territorio',
+                b.nome AS 'bairro',
+                p.nome AS 'nome_pessoa',
+                p.data_nascimento AS 'nascimento_pessoa',
+                sp.nome AS 'sexo_pessoa',
+                g.nome AS 'nome_genitora',
+                g.data_nascimento AS 'nascimento_genitora',
+                sg.nome AS 'sexo_genitora',
+                d.nome AS 'demandante',
+                proc.ativo AS 'ativo',
+                proc.migrado AS 'migrado',
+                m.numero_novo AS 'numero_novo',
+                m.ano_novo AS 'ano_novo',
+                m.territorio_novo AS 'territorio_novo'
+            FROM
+                procedimentos proc
+            LEFT JOIN
+                territorios_ct t ON t.id = proc.id_territorio
+            LEFT JOIN
+                bairros b ON b.id = proc.id_bairro
+            LEFT JOIN
+                pessoas p ON p.id = proc.id_pessoa
+            LEFT JOIN
+                pessoas g ON g.id = proc.id_genitora_pessoa
+            LEFT JOIN
+                demandantes d ON d.id = proc.id_demandante
+            LEFT JOIN
+                migracoes m ON m.id = proc.id_migracao
+            LEFT JOIN
+                sexos sp ON sp.id = p.id_sexo
+            LEFT JOIN
+                sexos sg ON sg.id = g.id_sexo
+            WHERE proc.id = ?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt -> bind_param('i', $idProcedimento);
+
+            if ($stmt->execute()) {
+                $resultado = $stmt->get_result();
+                $linhas = $resultado ->num_rows;
+                if($linhas > 0){
+                    while($row = $resultado->fetch_assoc()) {
+                        $procedimentosEncontrados[] = [
+                            'numero' => $row['numero'],
+                            'ano' => $row['ano'],
+                            'bairro' => $row['bairro'],
+                            'territorio' => $row['territorio'],
+                            'nome_pessoa' => $row['nome_pessoa'],
+                            'nascimento_pessoa' => $row['nascimento_pessoa'],
+                            'sexo_pessoa' => $row['sexo_pessoa'],
+                            'nome_genitora' => $row['nome_genitora'],
+                            'nascimento_genitora' => $row['nascimento_genitora'],
+                            'sexo_genitora' => $row['sexo_genitora'],
+                            'demandante' => $row['demandante']
+                        ];
+                    }
+                    echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+                    $stmt->close();
+                    $mysqli->close();
+                    exit();
+                }
+                else{
+                    echo json_encode(['mensagem' => 'Nenhum resultado para a busca', 'dados' => []]);
+                    $stmt->close();
+                    $mysqli->close();
+                    exit();
+                }
+            }   
+        }
+    }
+}
 
 
 

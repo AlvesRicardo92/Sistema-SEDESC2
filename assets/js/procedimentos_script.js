@@ -44,7 +44,12 @@ $(document).ready(function() {
             parametroBusca=$searchNascimento.val();
             tipo='nascimento';
         }
-        loadProcedimentos(parametroBusca,tipo);
+        if(parametroBusca==''){
+            $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Digite em algum dos campos acima</td></tr>');
+        }else{
+            loadProcedimentos(parametroBusca,tipo);
+        }
+        
     });
     // Função para carregar dados na tabela via AJAX
     function loadProcedimentos(parametroBusca = "", tipo="") {
@@ -61,12 +66,19 @@ $(document).ready(function() {
             success: function(response) {
                 if (response && response.mensagem === "Sucesso" && response.dados.length > 0) {
                     let tableRows = '';
+                    let dataNascimentoPessoa='';
+                    let dataOriginal='';
+                    let partes;
                     response.dados.forEach(procedimento => {
+                        dataOriginal = procedimento.nascimento_pessoa; 
+                        partes = dataOriginal.split('-');
+                        dataNascimentoPessoa = `${partes[2]}/${partes[1]}/${partes[0]}`;
                         tableRows += `
                             <tr>
                                 <td>${procedimento.numero}/${procedimento.ano}</td>
+                                <td>${procedimento.territorio}</td>
                                 <td>${procedimento.nome_pessoa}</td>
-                                <td>${procedimento.nascimento_pessoa}</td>
+                                <td>${dataNascimentoPessoa}</td>
                                 <td>${procedimento.nome_genitora}</td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-sm me-1 btn-visualizar" data-token="${procedimento.token}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
@@ -114,31 +126,36 @@ $(document).ready(function() {
     // Lógica para Modais (Visualizar, Editar, Excluir)
     // Usar delegação de eventos para botões dentro da tabela
     $procedimentosTableBody.on('click', '.btn-visualizar', function() {
-        const id = $(this).data('token');
+        const token = $(this).data('token');
         // Simular busca de dados do procedimento por ID
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
-            method: 'GET',
-            data: { action: 'get_procedimento', id: id },
+            method: 'POST',
+            data: { acao: 'visualizar', token: token },
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso" && response.dados) {
-                    const proc = response.dados;
-                    $('#viewNumeroProcedimento').val(proc.numero_procedimento);
-                    $('#viewAnoProcedimento').val(proc.ano_procedimento);
-                    $('#viewBairro').val(proc.bairro);
-                    $('#viewTerritorioBairro').val(proc.territorio_bairro);
-                    $('#viewNomePessoa').val(proc.nome_pessoa);
-                    $('#viewDataNascimentoPessoa').val(proc.data_nascimento_pessoa);
-                    $('#viewSexoPessoa').val(proc.sexo_pessoa);
-                    $('#viewNomeGenitora').val(proc.nome_genitora);
-                    $('#viewDataNascimentoGenitora').val(proc.data_nascimento_genitora);
-                    $('#viewSexoGenitora').val(proc.sexo_genitora);
-                    $('#viewDemandante').val(proc.demandante);
+                    const procedimento = response.dados[0];
+                    $('#viewNumeroProcedimento').val(procedimento.numero);
+                    $('#viewAnoProcedimento').val(procedimento.ano);
+                    $('#viewBairro').val(procedimento.bairro);
+                    $('#viewTerritorioBairro').val(procedimento.territorio);
+                    $('#viewNomePessoa').val(procedimento.nome_pessoa);
+                    $('#viewDataNascimentoPessoa').val(procedimento.nascimento_pessoa);
+                    $('#viewSexoPessoa').val(procedimento.sexo_pessoa);
+                    $('#viewNomeGenitora').val(procedimento.nome_genitora);
+                    $('#viewDataNascimentoGenitora').val(procedimento.nascimento_genitora);
+                    $('#viewSexoGenitora').val(procedimento.sexo_genitora);
+                    $('#viewDemandante').val(procedimento.demandante);
                     $('#visualizarModal').modal('show');
                 } else {
+                    console.log ("falha dados");
                     alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
                 }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
             }
         });
     });
