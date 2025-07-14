@@ -56,31 +56,30 @@ if($acao==="buscar"){
     $variavel="";
 
     if($tipo=="numero"){
-        $whereQuery='numero_procedimento =?';
+        $whereQuery='proc.numero_procedimento =?';
         $binds="i";
         $variavel=$parametroBusca;
     }
     if($tipo=="nome"){
-        $whereQuery='nome_pessoa =?';
+        $whereQuery='p.nome like ?';
         $binds="s";
-        $variavel= 'like %' . $parametroBusca . '%';
+        $variavel= '%' . $parametroBusca . '%';
     }
     if($tipo=="genitora"){
-        $whereQuery='nome_genitora like ?';
+        $whereQuery='g.nome like ?';
         $binds="s";
         $variavel= '%' . $parametroBusca . '%';
     }
     if($tipo=="nascimento"){
-        $whereQuery='nascimento =?';
+        $whereQuery='p.data_nascimento =?';
         $binds="s";
         $variavel= $parametroBusca;
     }
-    echo $whereQuery;
-    echo $binds;
-    echo $variavel;
-    exit();
 
-    $stmt = $mysqli->prepare($sql . $whereQuery . ' ORDER BY ano DESC and numero DESC');
+    /*echo $sql . $whereQuery . ' ORDER BY ano DESC, numero DESC'.'<br><br><br>';
+    echo $variavel;
+    exit();*/
+    $stmt = $mysqli->prepare($sql . $whereQuery . ' ORDER BY ano DESC, numero DESC');
     $stmt -> bind_param($binds, $variavel);
 
     if ($stmt->execute()) {
@@ -100,9 +99,11 @@ if($acao==="buscar"){
                 $_SESSION['tokens'][$token] = $row['id'];
             }
             echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+            exit();
         }
         else{
             echo json_encode(['mensagem' => 'Nenhum resultado para a busca', 'dados' => []]);
+            exit();
         }
     }
     $stmt->close();

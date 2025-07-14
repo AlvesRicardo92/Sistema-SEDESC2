@@ -44,7 +44,7 @@ $(document).ready(function() {
             parametroBusca=$searchNascimento.val();
             tipo='nascimento';
         }
-        loadProcedimentos(parametroBusca);
+        loadProcedimentos(parametroBusca,tipo);
     });
     // Função para carregar dados na tabela via AJAX
     function loadProcedimentos(parametroBusca = "", tipo="") {
