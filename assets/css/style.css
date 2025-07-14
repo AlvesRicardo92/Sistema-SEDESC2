@@ -5,14 +5,13 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%; /* Garante que html e body ocupem 100% da altura da viewport */
-    overflow: hidden; /* Esconde qualquer barra de rolagem indesejada no nível do documento */
 }
 
 /* Torna o body um container flexível para gerenciar o layout vertical */
 body {
     display: flex;
     flex-direction: column; /* Organiza os filhos (cabeçalho e conteúdo principal) em coluna */
+    min-height: 100vh; /* This ensures the body always takes at least the full viewport height */
 }
 /* Altera a cor do texto do título do formulário */
 .text-primary {
@@ -28,10 +27,12 @@ body {
     display: flex;
     justify-content: center; /* Centraliza horizontalmente */
     align-items: center;     /* Centraliza verticalmente */
-    min-height: 100vh;       /* Garante que o wrapper ocupe a altura total da viewport */
+    min-height:calc(100vh - 56px); /* Garante que o wrapper ocupe a altura total da viewport */
     width: 100%;             /* Ocupa a largura total */
     padding: 20px;           /* Adiciona um pouco de padding para não colar nas bordas */
     box-sizing: border-box;  /* Inclui padding na largura/altura */
+    flex-grow: 1;
+    overflow: hidden; /* Keep this for dashboard to prevent its internal content from causing page scroll */
 }
 
 /* Limita o tamanho do carrossel em si */
@@ -75,4 +76,14 @@ body {
 .modal-footer-custom {
     border-bottom-left-radius: 0.75rem;
     border-bottom-right-radius: 0.75rem;
+}
+.texto-carrossel{
+    font-size:x-large;
+    color:white;
+	-webkit-text-stroke: 1px black;
+}
+.container.mt-5{
+    flex-grow: 1; /* Allow the Bootstrap container to grow and take available space */
+    /* No explicit height or overflow: hidden needed here, let browser handle scrolling */
+    padding-bottom: 20px; /* Add some padding at the bottom if needed */
 }

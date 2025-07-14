@@ -54,7 +54,7 @@
                         echo "<div class='carousel-item " . ($contador == 0 ? "active" : "") . "'>";
                         echo '<img src="assets/imagens/' . (empty($row['nome_imagem']) ? 'template.png' : $row['nome_imagem']) . '" class="d-block w-100" alt="Aviso ' . ($contador + 1) . '">';
                             echo "<div class='carousel-caption d-none d-md-block'>";
-                                echo $row['descricao'];
+                                echo '<span class="texto-carrossel">' . $row['descricao'] . '</span>';
                             echo "</div>";
                         echo "</div>";
                         $contador+=1;
