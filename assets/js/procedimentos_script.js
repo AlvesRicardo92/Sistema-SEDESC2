@@ -45,7 +45,7 @@ $(document).ready(function() {
             tipo='nascimento';
         }
         if(parametroBusca==''){
-            $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Digite em algum dos campos acima</td></tr>');
+            $procedimentosTableBody.html('<tr><td colspan="6" class="text-center text-muted">Digite em algum dos campos acima</td></tr>');
         }else{
             loadProcedimentos(parametroBusca,tipo);
         }
@@ -53,7 +53,7 @@ $(document).ready(function() {
     });
     // Função para carregar dados na tabela via AJAX
     function loadProcedimentos(parametroBusca = "", tipo="") {
-        $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Carregando procedimentos...</td></tr>');
+        $procedimentosTableBody.html('<tr><td colspan="6" class="text-center text-muted">Carregando procedimentos...</td></tr>');
 
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
@@ -102,32 +102,19 @@ $(document).ready(function() {
                     });
                     $procedimentosTableBody.html(tableRows);
                 } else {
-                    $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-muted">Nenhum procedimento encontrado.</td></tr>');
+                    $procedimentosTableBody.html('<tr><td colspan="6" class="text-center text-muted">Nenhum procedimento encontrado.</td></tr>');
                 }
             },
             error: function() {
-                $procedimentosTableBody.html('<tr><td colspan="5" class="text-center text-danger">Erro ao carregar dados. Tente novamente.</td></tr>');
+                $procedimentosTableBody.html('<tr><td colspan="6" class="text-center text-danger">Erro ao carregar dados. Tente novamente.</td></tr>');
             }
         });
-    }
-
-    // Evento para o botão "Procurar"
-    //$('#btnProcurar').on('click', function() {
-    //    const searchParams = {
-    //        numero: $searchNumero.val(),
-    //        nome: $searchNome.val(),
-    //        genitora: $searchGenitora.val(),
-    //        nascimento: $searchNascimento.val()
-    //    };
-    //    loadProcedimentos(searchParams);
-    //});
-    
+    }   
 
     // Lógica para Modais (Visualizar, Editar, Excluir)
     // Usar delegação de eventos para botões dentro da tabela
     $procedimentosTableBody.on('click', '.btn-visualizar', function() {
         const token = $(this).data('token');
-        // Simular busca de dados do procedimento por ID
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
             method: 'POST',
@@ -161,49 +148,155 @@ $(document).ready(function() {
     });
 
     $procedimentosTableBody.on('click', '.btn-editar', function() {
-        const id = $(this).data('id');
-        // Simular busca de dados do procedimento por ID para preencher o formulário de edição
+        $('.select-bairros').empty();
         $.ajax({
-            url: 'gerencias/processa_procedimentos.php',
-            method: 'GET',
-            data: { action: 'get_procedimento', id: id },
+            url: 'gerencias/buscar_bairros.php',
+            method: 'POST',
+            data: {tipo:'editar'},
             dataType: 'json',
             success: function(response) {
-                if (response && response.mensagem === "Sucesso" && response.dados) {
-                    const proc = response.dados;
-                    $('#editProcedimentoId').val(proc.id);
-                    $('#editNumeroProcedimento').val(proc.numero_procedimento);
-                    $('#editAnoProcedimento').val(proc.ano_procedimento);
-                    $('#editBairro').val(proc.bairro);
-                    $('#editTerritorioBairro').val(proc.territorio_bairro);
-                    $('#editNomePessoa').val(proc.nome_pessoa);
-                    $('#editDataNascimentoPessoa').val(proc.data_nascimento_pessoa);
-                    $('#editSexoPessoa').val(proc.sexo_pessoa);
-                    $('#editNomeGenitora').val(proc.nome_genitora);
-                    $('#editDataNascimentoGenitora').val(proc.data_nascimento_genitora);
-                    $('#editSexoGenitora').val(proc.sexo_genitora);
-                    $('#editDemandante').val(proc.demandante);
-                    $('#editarModal').modal('show');
+                if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                    $('.select-bairros').append('<option value="0">Selecione...</option>');
+                    response.dados.forEach(bairro => {
+                        $('.select-bairros').append('<option value="'+bairro.id+'">'+ bairro.nome+'</option>');
+                    });
                 } else {
-                    alert('Erro ao carregar dados do procedimento para edição.'); // Usar modal customizado
+                    console.log ("falha dados");
+                    alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
                 }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
             }
         });
+        $('.select-pessoas').empty();
+        $('.select-genitoras').empty();
+        $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                    $('.select-pessoas').append('<option value="0">Selecione...</option>');
+                    $('.select-genitoras').append('<option value="0">Selecione...</option>');
+                    response.dados.forEach(pessoa => {
+                        $('.select-pessoas').append('<option value="'+pessoa.id+'">'+ pessoa.nome+'</option>');
+                        $('.select-genitoras').append('<option value="'+pessoa.id+'">'+ pessoa.nome+'</option>');
+                    });
+                } else {
+                    console.log ("falha dados");
+                    alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
+                }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
+            }
+        });
+        $('.select-sexos').empty();
+        $('.select-sexos-genitora').empty();
+        $.ajax({
+            url: 'gerencias/buscar_sexos.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                    $('.select-sexos').append('<option value="0">Selecione...</option>');
+                    $('.select-sexos-genitora').append('<option value="0">Selecione...</option>');
+                    response.dados.forEach(sexo => {
+                        $('.select-sexos').append('<option value="'+sexo.id+'">'+ sexo.nome+'</option>');
+                        $('.select-sexos-genitora').append('<option value="'+sexo.id+'">'+ sexo.nome+'</option>');
+                    });
+                } else {
+                    console.log ("falha dados");
+                    alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
+                }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
+            }
+        });
+        $('.select-demandantes').empty();
+        $.ajax({
+            url: 'gerencias/buscar_demandantes.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                    $('.select-demandantes').append('<option value="0">Selecione...</option>');
+                    response.dados.forEach(demandante => {
+                        $('.select-demandantes').append('<option value="'+demandante.id+'">'+ demandante.nome+'</option>');
+                    });
+                } else {
+                    console.log ("falha dados");
+                    alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
+                }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
+            }
+        });
+        const token = $(this).data('token');
+        $.ajax({
+            url: 'gerencias/processa_procedimentos.php',
+            method: 'POST',
+            data: {acao:'editar',token:token},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                    const procedimento = response.dados[0];
+                    $('#editNumeroProcedimento').val(procedimento.numero);
+                    $('#editAnoProcedimento').val(procedimento.ano);
+                    console.log("id bairro: "+procedimento.id_bairro);
+                    $('#select-bairros').val(procedimento.id_bairro);
+                    $('#editTerritorioBairro').val(procedimento.territorio);
+                    console.log("id pessoa: "+procedimento.id_pessoa);
+                    $('#select-pessoas').val(procedimento.id_pessoa);
+                    $('#editDataNascimentoPessoa').val(procedimento.nascimento_pessoa);
+                    console.log("id sexo pessoa: "+procedimento.id_sexo);
+                    $('#select-sexos').val(procedimento.id_sexo);
+                    console.log("id genitora: "+procedimento.id_genitora_pessoa);
+                    $('#select-genitoras').val(procedimento.id_genitora_pessoa);
+                    $('#editDataNascimentoGenitora').val(procedimento.nascimento_genitora);
+                    console.log("id sexo genitora: "+procedimento.id_sexo_genitora);
+                    $('#select-sexos-genitora').val(procedimento.id_sexo_genitora);
+                    console.log("id demandante: "+procedimento.id_demandante);
+                    $('#select-demandantes').val(procedimento.id_demandante);
+                    $('#salvarAlteracoes').data('token', token);
+                    $('#editarModal').modal('show');
+                } else {
+                    console.log ("falha dados");
+                    alert('Erro ao carregar dados do procedimento.'); // Usar modal customizado em produção
+                }
+            },
+            error: function() {
+                console.log ("erro");
+                alert('Erro ao buscar o procedimento.');
+            }
+        });
+        
     });
 
     $('#formEditarProcedimento').on('submit', function(e) {
         e.preventDefault();
+        const token = $('#salvarAlteracoes').data('token');
         const formData = $(this).serialize(); // Pega todos os dados do formulário
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
             method: 'POST',
-            data: formData + '&action=update_procedimento', // Adiciona a ação para o PHP
+            data: {acao:'upgrade',token:$('#salvarAlteracoes').data('token')},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
                     alert('Procedimento atualizado com sucesso!'); // Usar modal customizado
                     $('#editarModal').modal('hide');
-                    loadProcedimentos(); // Recarrega a tabela
+                    //loadProcedimentos(); // Recarrega a tabela
                 } else {
                     alert('Erro ao atualizar procedimento: ' + response.mensagem); // Usar modal customizado
                 }

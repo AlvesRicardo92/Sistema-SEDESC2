@@ -176,60 +176,72 @@ if (!isset($_SESSION['usuario']['id'])) {
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="editNumeroProcedimento" class="form-label">Número Procedimento</label>
-                                <input type="text" class="form-control" id="editNumeroProcedimento" name="numero_procedimento" required>
+                                <input type="text" class="form-control" id="editNumeroProcedimento" name="numero_procedimento" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="editAnoProcedimento" class="form-label">Ano Procedimento</label>
-                                <input type="text" class="form-control" id="editAnoProcedimento" name="ano_procedimento" required>
+                                <input type="text" class="form-control" id="editAnoProcedimento" name="ano_procedimento" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="editBairro" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="editBairro" name="bairro" required>
+                                <label for="select-bairros" class="form-label">Bairro</label>
+                                <select class="select-bairros form-select" id="select-bairros" required>
+                                </select>
                             </div>
+                            
                             <div class="col-md-6">
                                 <label for="editTerritorioBairro" class="form-label">Território Bairro</label>
-                                <input type="text" class="form-control" id="editTerritorioBairro" name="territorio_bairro" required>
+                                <input type="text" class="form-control" id="editTerritorioBairro" name="territorio_bairro" disabled>
+                            </div>
+                        </div>
+                        <div class="separador-horizontal"><strong>Pessoa</strong></div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="select-pessoas" class="form-label">Pessoa</label>
+                                <select class="select-pessoas form-select" id="select-pessoas" required>
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="editNomePessoa" class="form-label">Nome Pessoa</label>
-                                <input type="text" class="form-control" id="editNomePessoa" name="nome_pessoa" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editDataNascimentoPessoa" class="form-label">Data Nascimento Pessoa</label>
+                                <label for="editDataNascimentoPessoa" class="form-label">Data Nascimento</label>
                                 <input type="date" class="form-control" id="editDataNascimentoPessoa" name="data_nascimento_pessoa" required>
                             </div>
+                            <div class="col-md-6">
+                                <label for="select-sexos" class="form-label">Sexo</label>
+                                    <select class="select-sexos form-select" id="select-sexos" required>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="separador-horizontal"><strong>Genitora</strong></div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="select-genitoras" class="form-label">Genitora</label>
+                                <select class="select-genitoras form-select" id="select-genitoras" required>
+                                </select>
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="editSexoPessoa" class="form-label">Sexo Pessoa</label>
-                                <input type="text" class="form-control" id="editSexoPessoa" name="sexo_pessoa" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editNomeGenitora" class="form-label">Nome Genitora</label>
-                                <input type="text" class="form-control" id="editNomeGenitora" name="nome_genitora" required>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="editDataNascimentoGenitora" class="form-label">Data Nascimento Genitora</label>
+                                <label for="editDataNascimentoGenitora" class="form-label">Data Nascimento</label>
                                 <input type="date" class="form-control" id="editDataNascimentoGenitora" name="data_nascimento_genitora" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="editSexoGenitora" class="form-label">Sexo Genitora</label>
-                                <input type="text" class="form-control" id="editSexoGenitora" name="sexo_genitora" required>
+                                <label for="select-sexos-genitora" class="form-label">Sexo</label>
+                                <select class="select-sexos-genitora form-select" id="select-sexos-genitora" required>
+                                </select>
                             </div>
                         </div>
+                        <div class="separador-horizontal"><strong>Demandante</strong></div>
                         <div class="mb-3">
-                            <label for="editDemandante" class="form-label">Demandante</label>
-                            <input type="text" class="form-control" id="editDemandante" name="demandante" required>
+                            <label for="select-demandantes" class="form-label">Demandantes</label>
+                            <select class="select-demandantes form-select" id="select-demandantes" required>
+                            </select>
                         </div>
                         <div class="modal-footer modal-footer-custom">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                            <button type="submit" class="btn btn-primary" id="salvarAlteracoes">Salvar Alterações</button>
                         </div>
                     </form>
                 </div>

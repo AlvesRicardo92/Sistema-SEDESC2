@@ -82,7 +82,7 @@ if($acao==="buscar"){
         $variavel= $parametroBusca;
     }
     if($_SESSION['usuario']['territorio']<4){
-        $whereQuery+=' AND proc.id_territorio =' . $_SESSION['usuario']['territorio'];
+        $whereQuery.=' AND proc.id_territorio =' . $_SESSION['usuario']['territorio'];
     }
     $stmt = $mysqli->prepare($sql . $whereQuery . ' ORDER BY ano DESC, numero DESC');
     $stmt -> bind_param($binds, $variavel);
@@ -230,7 +230,13 @@ if($acao==="editar"){
                 proc.migrado AS 'migrado',
                 m.numero_novo AS 'numero_novo',
                 m.ano_novo AS 'ano_novo',
-                m.territorio_novo AS 'territorio_novo'
+                m.territorio_novo AS 'territorio_novo',
+                proc.id_bairro as 'id_bairro',
+                proc.id_pessoa as 'id_pessoa',
+                p.id_sexo as 'id_sexo',
+                proc.id_genitora_pessoa as 'id_genitora',
+                g.id_sexo as 'id_sexo_genitora',
+                proc.id_demandante as 'id_demandante'               
             FROM
                 procedimentos proc
             LEFT JOIN
@@ -269,10 +275,17 @@ if($acao==="editar"){
                             'nome_genitora' => $row['nome_genitora'],
                             'nascimento_genitora' => $row['nascimento_genitora'],
                             'sexo_genitora' => $row['sexo_genitora'],
-                            'demandante' => $row['demandante']
+                            'demandante' => $row['demandante'],
+                            'id_bairro' => $row['id_bairro'],
+                            'id_pessoa'  => $row['id_pessoa'],
+                            'id_sexo' => $row['id_sexo'],
+                            'id_genitora_pessoa' => $row['id_genitora'],
+                            'id_sexo_genitora' => $row['id_sexo_genitora'],
+                            'id_demandante' => $row['id_demandante']                            
                         ];
                     }
                     echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
+                    $resultado->free_result();
                     $stmt->close();
                     $mysqli->close();
                     exit();

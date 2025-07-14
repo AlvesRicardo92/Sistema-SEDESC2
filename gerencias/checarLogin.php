@@ -96,7 +96,6 @@
             }
         }
         else{
-            echo "<script>console.log('não executou');</script>";
             $mensagem = "Falha. Erro ao executar a query";
             $dados = [];
             $resposta = [
