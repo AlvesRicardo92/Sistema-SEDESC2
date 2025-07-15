@@ -256,16 +256,15 @@ if (!isset($_SESSION['usuario']['id'])) {
         <div class="modal-dialog">
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-custom">
-                    <h5 class="modal-title" id="excluirModalLabel">Confirmar Exclusão</h5>
+                    <h5 class="modal-title" id="excluirModalLabel">Confirmar Desativação</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Tem certeza de que deseja excluir este procedimento?</p>
-                    <input type="hidden" id="deleteProcedimentoId">
                 </div>
                 <div class="modal-footer modal-footer-custom">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Desativar</button>
                 </div>
             </div>
         </div>
