@@ -6,6 +6,8 @@ $(document).ready(function() {
     const $searchNascimento = $('#searchNascimento');
     var parametroBusca ='';
     var tipo='';
+    var $linhaTabelaExcluir;
+    var sucessoNaDesativacao;
 
     // Referência ao corpo da tabela
     const $procedimentosTableBody = $('#procedimentosTableBody');
@@ -315,6 +317,7 @@ $(document).ready(function() {
     });
     // Referência à div de mensagem no modal
     const $modalMessage = $('#modalMessage');
+    
 
     // Função para exibir a mensagem no modal
     function showModalMessage(message, type) {
@@ -344,6 +347,8 @@ $(document).ready(function() {
     $('#editarModal').on('shown.bs.modal', function () {
         $modalMessage.addClass('d-none').empty(); // Oculta e limpa a mensagem
     });
+
+    
 
     $('#formEditarProcedimento').on('submit', function(e) {
         e.preventDefault();
@@ -421,31 +426,87 @@ $(document).ready(function() {
     });
 
     $procedimentosTableBody.on('click', '.btn-excluir', function() {
-        const id = $(this).data('id');
-        $('#deleteProcedimentoId').val(id);
+        // Encontra a linha (<tr>) mais próxima do botão clicado
+        $linhaTabelaExcluir = $(this).closest('tr');
+
+        // Encontra a primeira célula (<td>) dentro dessa linha
+        const $primeiraColuna = $linhaTabelaExcluir.find('td:first');
+
+        // Pega o texto dessa primeira célula
+        const valorPrimeiraColuna = $primeiraColuna.text().trim();
+        $('.modal-body p').html("Deseja realmente desativar o procedimento <strong>" + valorPrimeiraColuna + "</strong>?");
+        const token = $(this).data('token');
+        $('#confirmDeleteBtn').data('token', token);
         $('#excluirModal').modal('show');
     });
 
+    const $modalMessageDesativar = $('#modalMessageDesativar');
+    // Função para exibir a mensagem no modal
+    function showModalMessageDesativar(message, type) {
+        // Limpa classes anteriores e oculta
+        $modalMessageDesativar.removeClass('d-none alert-success alert-danger alert-warning').empty();
+
+        // Adiciona a classe de estilo e a mensagem
+        $modalMessageDesativar.text(message);
+        if (type === 'success') {
+            $modalMessageDesativar.addClass('alert-success');
+        } else if (type === 'error') {
+            $modalMessageDesativar.addClass('alert-danger');
+        } else if (type === 'warning') { // Para o status 'aviso' do PHP
+            $modalMessageDesativar.addClass('alert-warning');
+        }
+        
+        // Exibe a div de mensagem
+        $modalMessageDesativar.removeClass('d-none').slideDown(); // slideDown para uma animação suave
+    }
+
+    // Oculta a mensagem quando o modal é fechado ou antes de uma nova submissão
+    $('#excluirModal').on('hidden.bs.modal', function () {
+        $modalMessageDesativar.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
+
+    // Oculta a mensagem quando o modal é exibido (para garantir que esteja limpo ao abrir)
+    $('#excluirModal').on('shown.bs.modal', function () {
+        $modalMessageDesativar.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
+
     $('#confirmDeleteBtn').on('click', function() {
-        const id = $('#deleteProcedimentoId').val();
+        const token = $(this).data('token');
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
             method: 'POST',
-            data: { action: 'delete_procedimento', id: id },
+            data: { acao: 'desativar', token: token },
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
-                    alert('Procedimento excluído com sucesso!'); // Usar modal customizado
-                    $('#excluirModal').modal('hide');
-                    loadProcedimentos(); // Recarrega a tabela
+                    sucessoNaDesativacao=true;
+                    showModalMessageDesativar('Procedimento desativado com sucesso!', 'success');
+                    setTimeout(function() {
+                        $('#excluirModal').modal('hide');
+                    }, 2000);
                 } else {
+                    sucessoNaDesativacao=false;
+                    showModalMessageDesativar('Erro ao desativar procedimento: ' + response.mensagem, 'danger');
                     alert('Erro ao excluir procedimento: ' + response.mensagem); // Usar modal customizado
                 }
             },
             error: function() {
-                alert('Erro de comunicação com o servidor ao excluir.'); // Usar modal customizado
+                sucessoNaDesativacao=false;
+                showModalMessageDesativar('Erro de comunicação com o servidor ao desativar', 'danger');
             }
         });
+    });
+
+    $('#excluirModal').on('hidden.bs.modal', function () {
+        showModalMessageDesativar('', 'd-none'); // Limpa e oculta a mensagem
+        
+        // *** AQUI: Ação de fadeOut e remoção da linha da tabela APÓS o modal fechar ***
+        if (sucessoNaDesativacao && $linhaTabelaExcluir && $linhaTabelaExcluir.length > 0) {
+            $linhaTabelaExcluir.fadeOut(500, function() { 
+                $(this).remove();
+            });
+        }
+        sucessoNaDesativacao = false;
     });
 
     $('#formNovoProcedimento').on('submit', function(e) {

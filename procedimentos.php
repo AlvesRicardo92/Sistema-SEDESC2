@@ -88,7 +88,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     <div class="modal fade" id="visualizarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="visualizarModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-custom">
+                <div class="modal-header modal-header-custom-visualizar">
                     <h5 class="modal-title" id="visualizarModalLabel">Visualizar Procedimento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -166,7 +166,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     <div class="modal fade" id="editarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-custom">
+                <div class="modal-header modal-header-custom-editar">
                     <h5 class="modal-title" id="editarModalLabel">Editar Procedimento</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -255,11 +255,13 @@ if (!isset($_SESSION['usuario']['id'])) {
     <div class="modal fade" id="excluirModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="excluirModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-custom">
+                <div class="modal-header modal-header-custom-desativar">
                     <h5 class="modal-title" id="excluirModalLabel">Confirmar Desativação</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="modalMessageDesativar" class="alert d-none" role="alert">
+                    </div>
                     <p>Tem certeza de que deseja excluir este procedimento?</p>
                 </div>
                 <div class="modal-footer modal-footer-custom">

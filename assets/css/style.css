@@ -67,8 +67,20 @@ body {
 .modal-content-custom {
     border-radius: 0.75rem; /* Bordas arredondadas para modais */
 }
-.modal-header-custom {
-    background-color: #007bff; /* Cor de fundo para o cabeçalho do modal */
+.modal-header-custom-visualizar {
+    background-color: #25cff2; /* Cor de fundo para o cabeçalho do modal */
+    color: white;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+.modal-header-custom-editar {
+    background-color: #ffc107; /* Cor de fundo para o cabeçalho do modal */
+    color: white;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+.modal-header-custom-desativar {
+    background-color: #b02a37; /* Cor de fundo para o cabeçalho do modal */
     color: white;
     border-top-left-radius: 0.75rem;
     border-top-right-radius: 0.75rem;
