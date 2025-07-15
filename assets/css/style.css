@@ -85,6 +85,12 @@ body {
     border-top-left-radius: 0.75rem;
     border-top-right-radius: 0.75rem;
 }
+.modal-header-custom-novo {
+    background-color: #198754; /* Cor de fundo para o cabeçalho do modal */
+    color: white;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
 .modal-footer-custom {
     border-bottom-left-radius: 0.75rem;
     border-bottom-right-radius: 0.75rem;

@@ -8,7 +8,9 @@ $(document).ready(function() {
     var tipo='';
     var $linhaTabelaExcluir;
     var sucessoNaDesativacao;
+    var anoAtual = new Date().getFullYear();
 
+    $('#newAnoProcedimento').val(anoAtual);
     // Referência ao corpo da tabela
     const $procedimentosTableBody = $('#procedimentosTableBody');
 
@@ -508,7 +510,189 @@ $(document).ready(function() {
         }
         sucessoNaDesativacao = false;
     });
+    $('#btnNovoProcedimento').on('click',function(){
+        let procedimentoData = null; // Variável para armazenar os detalhes do procedimento
+    
+        // Limpar todos os selects no início, antes de carregar
+        $('.new-select-bairros').empty();
+        $('.new-select-pessoas').empty();
+        $('.new-select-genitoras').empty();
+        $('.new-select-sexos').empty();
+        $('.new-select-sexos-genitora').empty();
+        $('.new-select-demandantes').empty();
+    
+        // Crie um array para armazenar as 'promessas' de cada chamada AJAX
+        const ajaxCalls = [];
+        
+        // 1. AJAX para popular o select de bairros
+        const populateBairros = $.ajax({
+            url: 'gerencias/buscar_bairros.php',
+            method: 'POST',
+            data: {tipo:'novo'},
+            dataType: 'json'
+        }).done(function(response) {
+            if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                $('.new-select-bairros').append('<option value="0">Selecione...</option>');
+                response.dados.forEach(bairro => {
+                    $('.new-select-bairros').append(`<option value="${bairro.id}">${bairro.nome}</option>`);
+                });
+            } else {
+                console.log("falha ao carregar bairros");
+                $('.new-select-bairros').append('<option value="0">Nenhum bairro encontrado</option>');
+            }
+        }).fail(function() {
+            console.log("erro na requisição de bairros");
+            $('.new-select-bairros').append('<option value="0">Erro ao carregar</option>');
+        });
+        ajaxCalls.push(populateBairros);
+    
+        // 2. AJAX para popular os selects de pessoas e genitoras
+        const populatePessoas = $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json'
+        }).done(function(response) {
+            if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                $('.new-select-pessoas').append('<option value="0">Selecione...</option>');
+                $('.new-select-genitoras').append('<option value="0">Selecione...</option>');
+                response.dados.forEach(pessoa => {
+                    $('.new-select-pessoas').append(`<option value="${pessoa.id}">${pessoa.nome}</option>`);
+                    $('.new-select-genitoras').append(`<option value="${pessoa.id}">${pessoa.nome}</option>`);
+                });
+            } else {
+                console.log("falha ao carregar pessoas/genitoras");
+                $('.new-select-pessoas').append('<option value="0">Nenhuma pessoa encontrada</option>');
+                $('.new-select-genitoras').append('<option value="0">Nenhuma genitora encontrada</option>');
+            }
+        }).fail(function() {
+            console.log("erro na requisição de pessoas");
+            $('.new-select-pessoas').append('<option value="0">Erro ao carregar</option>');
+            $('.new-select-genitoras').append('<option value="0">Erro ao carregar</option>');
+        });
+        ajaxCalls.push(populatePessoas);
+    
+        // 3. AJAX para popular os selects de sexo
+        const populateSexos = $.ajax({
+            url: 'gerencias/buscar_sexos.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json'
+        }).done(function(response) {
+            if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                $('.new-select-sexos').append('<option value="0">Selecione...</option>');
+                $('.new-select-sexos-genitora').append('<option value="0">Selecione...</option>');
+                response.dados.forEach(sexo => {
+                    $('.new-select-sexos').append(`<option value="${sexo.id}">${sexo.nome}</option>`);
+                    $('.new-select-sexos-genitora').append(`<option value="${sexo.id}">${sexo.nome}</option>`);
+                });
+            } else {
+                console.log("falha ao carregar sexos");
+                $('.new-select-sexos').append('<option value="0">Nenhum sexo encontrado</option>');
+                $('.new-select-sexos-genitora').append('<option value="0">Nenhum sexo encontrado</option>');
+            }
+        }).fail(function() {
+            console.log("erro na requisição de sexos");
+            $('.new-select-sexos').append('<option value="0">Erro ao carregar</option>');
+            $('.new-select-sexos-genitora').append('<option value="0">Erro ao carregar</option>');
+        });
+        ajaxCalls.push(populateSexos);
+    
+        // 4. AJAX para popular o select de demandantes
+        const populateDemandantes = $.ajax({
+            url: 'gerencias/buscar_demandantes.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json'
+        }).done(function(response) {
+            if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                $('.new-select-demandantes').append('<option value="0">Selecione...</option>');
+                response.dados.forEach(demandante => {
+                    $('.new-select-demandantes').append(`<option value="${demandante.id}">${demandante.nome}</option>`);
+                });
+            } else {
+                console.log("falha ao carregar demandantes");
+                $('.new-select-demandantes').append('<option value="0">Nenhum demandante encontrado</option>');
+            }
+        }).fail(function() {
+            console.log("erro na requisição de demandantes");
+            $('.new-select-demandantes').append('<option value="0">Erro ao carregar</option>');
+        });
+        ajaxCalls.push(populateDemandantes);
+        
+        $('#newBairro').on('input', function() { 
+            $('.new-select-bairros').val(0);
+            $('#newDataNascimentoPessoa').val('');
+            $('.new-select-sexos').val(0); 
+        });
+        $('.new-select-bairros').on('change', function() {
+            $('#newBairro').val('');
+        });
 
+        $('#newPessoa').on('input', function() { 
+            $('.new-select-pessoas').val(0);
+            $('#newDataNascimentoPessoa').val('');
+            $('.new-select-sexos').val(0); 
+        });
+        $('.new-select-pessoas').on('change', function() {
+            $.ajax({
+                url: 'gerencias/buscar_pessoas.php',
+                method: 'POST',
+                data: {id:$('#select-pessoas').val()},
+                dataType: 'json',
+                success: function(response) {
+                    if (response && response.mensagem === "Sucesso") {
+                        $('#newDataNascimentoPessoa').val(response.dados[0].data_nascimento);
+                        $('.new-select-sexos').val(response.dados[0].id_sexo);
+                        $('#newPessoa').val('');
+                    } else {
+                        showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
+                    }
+                },
+                error: function() {
+                    showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+                }
+            });
+        });
+        $('#newNomeGenitora').on('input', function() { 
+            $('.new-select-genitoras').val(0);
+            $('#newDataNascimentoGenitora').val('');
+            $('.new-select-sexos-genitora').val(0); 
+        });
+        $('.new-select-genitoras').on('change', function() {
+            $.ajax({
+                url: 'gerencias/buscar_pessoas.php',
+                method: 'POST',
+                data: {id:$('.select-genitoras').val()},
+                dataType: 'json',
+                success: function(response) {
+                    if (response && response.mensagem === "Sucesso") {
+                        $('#newDataNascimentoGenitora').val(response.dados[0].data_nascimento);
+                        $('.new-select-sexos-genitora').val(response.dados[0].id_sexo);
+                        $('#newNomeGenitora').val('');
+                    } else {
+                        showModalMessage('Erro ao atualizar dados da genitora: ' + response.mensagem, 'error');
+                    }
+                },
+                error: function() {
+                    showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+                }
+            });
+        });
+        $('#newDemandante').on('input', function() { 
+            $('.new-select-demandantes').val(0);
+        });
+        $('.new-select-demandantes').on('change', function() {
+            $('#newDemandante').val('');
+        });
+        // Usa $.when() para aguardar TODAS as chamadas AJAX finalizarem
+        $.when.apply($, ajaxCalls).done(function() {
+            // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas e seus `done` (success) ou `fail` callbacks já rodaram.
+            $('.salvar-procedimento').removeProp('disabled');
+        }).fail(function() {
+            console.log("erro nos ajax do novo procedimento");
+        });
+    });
     $('#formNovoProcedimento').on('submit', function(e) {
         e.preventDefault();
         const formData = $(this).serialize(); // Pega todos os dados do formulário

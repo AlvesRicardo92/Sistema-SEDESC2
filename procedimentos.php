@@ -75,7 +75,7 @@ if (!isset($_SESSION['usuario']['id'])) {
                 </thead>
                 <tbody id="procedimentosTableBody">
                     <tr>
-                        <td colspan="5" class="text-center text-muted">Digite um dos campos acima e clique em Procurar</td>
+                        <td colspan="6" class="text-center text-muted">Digite um dos campos acima e clique em Procurar</td>
                     </tr>
                 </tbody>
             </table>
@@ -83,7 +83,6 @@ if (!isset($_SESSION['usuario']['id'])) {
     </div>
 
     <!-- Modais -->
-
     <!-- Modal Visualizar -->
     <div class="modal fade" id="visualizarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="visualizarModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -273,7 +272,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     </div>
 
     <!-- Modal Novo Procedimento -->
-    <div class="modal fade" id="novoProcedimentoModal" tabindex="-1" aria-labelledby="novoProcedimentoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="novoProcedimentoModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="novoProcedimentoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-custom">
@@ -285,41 +284,55 @@ if (!isset($_SESSION['usuario']['id'])) {
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="newNumeroProcedimento" class="form-label">Número Procedimento</label>
-                                <input type="text" class="form-control" id="newNumeroProcedimento" name="numero_procedimento" required>
+                                <input type="text" class="form-control" id="newNumeroProcedimento" name="numero_procedimento" disabled>
                             </div>
                             <div class="col-md-6">
                                 <label for="newAnoProcedimento" class="form-label">Ano Procedimento</label>
-                                <input type="text" class="form-control" id="newAnoProcedimento" name="ano_procedimento" required>
+                                <input type="text" class="form-control" id="newAnoProcedimento" name="ano_procedimento" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="newBairro" class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="newBairro" name="bairro" required>
+                                <label for="new-select-bairros" class="form-label">Bairro</label>
+                                <select class="new-select-bairros form-select" id="new-select-bairros" required>
+                                </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="newTerritorioBairro" class="form-label">Território Bairro</label>
                                 <input type="text" class="form-control" id="newTerritorioBairro" name="territorio_bairro" required>
                             </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control mt-3" id="newBairro" name="bairro" placeholder="Digite aqui se não encontou o Bairro acima">
+                            </div>
                         </div>
+                        <div class="separador-horizontal"><strong>Pessoa</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="newNomePessoa" class="form-label">Nome Pessoa</label>
-                                <input type="text" class="form-control" id="newNomePessoa" name="nome_pessoa" required>
+                                <label for="new-select-pessoas" class="form-label">Nome Pessoa</label>
+                                <select class="new-select-pessoas form-select" id="new-select-pessoas" required>
+                                </select>
                             </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="newDataNascimentoPessoa" class="form-label">Data Nascimento Pessoa</label>
                                 <input type="date" class="form-control" id="newDataNascimentoPessoa" name="data_nascimento_pessoa" required>
                             </div>
+                            <div class="col-md-6">
+                                <label for="new-select-sexos" class="form-label">Sexo</label>
+                                <select class="new-select-sexos form-select" id="new-select-sexos" required>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control mt-3" id="newPessoa" name="pessoa" placeholder="Digite aqui se não encontou a pessoa acima">
+                            </div>
                         </div>
+                        <div class="separador-horizontal"><strong>Genitora</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="newSexoPessoa" class="form-label">Sexo Pessoa</label>
-                                <input type="text" class="form-control" id="newSexoPessoa" name="sexo_pessoa" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="newNomeGenitora" class="form-label">Nome Genitora</label>
-                                <input type="text" class="form-control" id="newNomeGenitora" name="nome_genitora" required>
+                                <label for="new-select-genitoras" class="form-label">Nome Genitora</label>
+                                <select class="new-select-genitoras form-select" id="new-select-genitoras" required>
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -328,17 +341,31 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 <input type="date" class="form-control" id="newDataNascimentoGenitora" name="data_nascimento_genitora" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="newSexoGenitora" class="form-label">Sexo Genitora</label>
-                                <input type="text" class="form-control" id="newSexoGenitora" name="sexo_genitora" required>
+                                <label for="new-select-sexos-genitora" class="form-label">Sexo Genitora</label>
+                                <select class="new-select-sexos-genitora form-select" id="new-select-sexos-genitora" required>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control mt-3" id="newNomeGenitora" name="nome_genitora" placeholder="Digite aqui se não encontou a genitora acima">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="newDemandante" class="form-label">Demandante</label>
-                            <input type="text" class="form-control" id="newDemandante" name="demandante" required>
+                        <div class="separador-horizontal"><strong>Demandante</strong></div>
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="new-select-demandantes" class="form-label">Demandante</label>
+                                <select class="new-select-demandantes form-select" id="new-select-demandantes" required>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control mt-3" id="newDemandante" name="demandante" placeholder="Digite aqui se não encontou o demandante acima">
+                            </div>
                         </div>
                         <div class="modal-footer modal-footer-custom">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Salvar Procedimento</button>
+                            <button type="submit" class="btn btn-primary salvar-procedimento" disabled><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
+                                <path d="M11 2H9v3h2z"/>
+                                <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z"/>
+                                </svg> Salvar Procedimento</button>
                         </div>
                     </form>
                 </div>
