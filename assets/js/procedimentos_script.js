@@ -4,6 +4,8 @@ $(document).ready(function() {
     const $searchNome = $('#searchNome');
     const $searchGenitora = $('#searchGenitora');
     const $searchNascimento = $('#searchNascimento');
+    var parametroBusca ='';
+    var tipo='';
 
     // Referência ao corpo da tabela
     const $procedimentosTableBody = $('#procedimentosTableBody');
@@ -26,8 +28,6 @@ $(document).ready(function() {
 
 
     $('#btnProcurar').on('click', function() {
-        var parametroBusca ='';
-        var tipo='';
         if ($searchNumero.val()!=""){
             parametroBusca=$searchNumero.val();
             tipo='numero';
@@ -289,8 +289,7 @@ $(document).ready(function() {
     
         // Usa $.when() para aguardar TODAS as chamadas AJAX finalizarem
         $.when.apply($, ajaxCalls).done(function() {
-            // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas
-            // e seus `done` (success) ou `fail` callbacks já rodaram.
+            // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas e seus `done` (success) ou `fail` callbacks já rodaram.
             
             if (procedimentoData) { // Verifica se os dados do procedimento foram carregados com sucesso
                 // Agora é seguro tentar selecionar as opções, pois elas já devem estar no DOM
@@ -314,30 +313,111 @@ $(document).ready(function() {
             alert('Ocorreu um erro ao carregar os dados necessários para o modal de edição.');
         });
     });
+    // Referência à div de mensagem no modal
+    const $modalMessage = $('#modalMessage');
+
+    // Função para exibir a mensagem no modal
+    function showModalMessage(message, type) {
+        // Limpa classes anteriores e oculta
+        $modalMessage.removeClass('d-none alert-success alert-danger alert-warning').empty();
+
+        // Adiciona a classe de estilo e a mensagem
+        $modalMessage.text(message);
+        if (type === 'success') {
+            $modalMessage.addClass('alert-success');
+        } else if (type === 'error') {
+            $modalMessage.addClass('alert-danger');
+        } else if (type === 'warning') { // Para o status 'aviso' do PHP
+            $modalMessage.addClass('alert-warning');
+        }
+        
+        // Exibe a div de mensagem
+        $modalMessage.removeClass('d-none').slideDown(); // slideDown para uma animação suave
+    }
+
+    // Oculta a mensagem quando o modal é fechado ou antes de uma nova submissão
+    $('#editarModal').on('hidden.bs.modal', function () {
+        $modalMessage.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
+
+    // Oculta a mensagem quando o modal é exibido (para garantir que esteja limpo ao abrir)
+    $('#editarModal').on('shown.bs.modal', function () {
+        $modalMessage.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
 
     $('#formEditarProcedimento').on('submit', function(e) {
         e.preventDefault();
         const token = $('#salvarAlteracoes').data('token');
-        console.log(token);
-        /*const formData = $(this).serialize(); // Pega todos os dados do formulário
+
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
             method: 'POST',
-            data: {acao:'upgrade',token:$('#salvarAlteracoes').data('token')},
+            data: {acao:'update',
+                   token:token,
+                   bairro:$('.select-bairros').val(),
+                   pessoa:$('.select-pessoas').val(),
+                   nascimento:$('#editDataNascimentoPessoa').val(),
+                   sexo:$('.select-sexos').val(),
+                   genitora:$('.select-genitoras').val(),
+                   nascimento_genitora:$('#editDataNascimentoGenitora').val(),
+                   sexo_genitora:$('.select-sexos-genitora').val(),
+                   demandante:$('.select-demandantes').val()},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
-                    alert('Procedimento atualizado com sucesso!'); // Usar modal customizado
-                    $('#editarModal').modal('hide');
-                    //loadProcedimentos(); // Recarrega a tabela
+                    showModalMessage('Procedimento atualizado com sucesso!', 'success');
+                    // Aguarda 2 segundos e esconde o modal
+                    setTimeout(function() {
+                        $('#editarModal').modal('hide');
+                        loadProcedimentos(parametroBusca,tipo);
+                    }, 2000);
                 } else {
-                    alert('Erro ao atualizar procedimento: ' + response.mensagem); // Usar modal customizado
+                    showModalMessage('Erro ao atualizar procedimento: ' + response.mensagem, 'error');
                 }
             },
             error: function() {
-                alert('Erro de comunicação com o servidor ao atualizar.'); // Usar modal customizado
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
             }
-        });*/
+        });
+    });
+
+    $('.select-pessoas').on('change', function() {
+        $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {id:$('#select-pessoas').val()},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#editDataNascimentoPessoa').val(response.dados[0].data_nascimento);
+                    $('.select-sexos').val(response.dados[0].id_sexo);
+                } else {
+                    showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
+                }
+            },
+            error: function() {
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+            }
+        });
+    });
+    $('.select-genitoras').on('change', function() {
+        $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {id:$('.select-genitoras').val()},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#editDataNascimentoGenitora').val(response.dados[0].data_nascimento);
+                    $('.select-sexos-genitora').val(response.dados[0].id_sexo);
+                } else {
+                    showModalMessage('Erro ao atualizar dados da genitora: ' + response.mensagem, 'error');
+                }
+            },
+            error: function() {
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+            }
+        });
     });
 
     $procedimentosTableBody.on('click', '.btn-excluir', function() {

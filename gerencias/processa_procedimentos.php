@@ -300,7 +300,69 @@ if($acao==="editar"){
         }
     }
 }
+if($acao==="update"){
+    if(!isset($_POST['token']) ||
+       !isset($_POST['bairro']) ||
+       !isset($_POST['pessoa']) ||
+       !isset($_POST['nascimento']) ||
+       !isset($_POST['sexo']) ||
+       !isset($_POST['genitora']) ||
+       !isset($_POST['nascimento_genitora']) ||
+       !isset($_POST['sexo_genitora']) ||
+       !isset($_POST['demandante']))
+       {
+            echo 'entrou no if';
+            return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+       }
+    else
+    {
+        $token = $_POST['token'];
+        $bairro=$_POST['bairro'];
+        $pessoa=$_POST['pessoa'];
+        $nascimento=$_POST['nascimento'];
+        $sexo=$_POST['sexo'];
+        $genitora=$_POST['genitora'];
+        $nascimento_genitora=$_POST['nascimento_genitora'];
+        $sexo_genitora=$_POST['sexo_genitora'];
+        $demandante=$_POST['demandante'];
+        $idProcedimento =$_SESSION['tokens'][$token];
 
+        $stmt = $mysqli->prepare("SET @user_id = ?");
+        $stmt->bind_param('i', $_SESSION['usuario']['id']);
+        $stmt->execute();
+        //$stmt->close();
+
+        $sql="UPDATE procedimentos 
+              SET id_bairro=?,
+                  id_pessoa=?,
+                  id_genitora_pessoa=?,
+                  id_demandante=?,
+                  id_usuario_atualizacao=?,
+                  data_hora_atualizacao=NOW() 
+              WHERE id=?";
+        
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('iiiiii', $bairro,$pessoa,$genitora,$demandante,$_SESSION['usuario']['id'],$idProcedimento);
+
+        if ($stmt->execute()) 
+        {
+            if($stmt->affected_rows>0)
+            {
+                echo json_encode(['mensagem' => 'Sucesso', 'dados' => []]);
+                $stmt->close();
+                $mysqli->close();
+                exit();
+            }
+            else
+            {
+                echo json_encode(['mensagem' => 'Erro ao atualizar o procedimento', 'dados' => []]);
+                $stmt->close();
+                $mysqli->close();
+                exit();
+            }
+        }
+    }
+}
 
 
 

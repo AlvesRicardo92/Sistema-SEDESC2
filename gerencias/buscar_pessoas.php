@@ -5,7 +5,11 @@
 
 	require "conexaoBanco.php";
     session_start();
-    
+
+    $id='';
+    if (isset($_POST['id'])){
+        $id=$_POST['id'];
+    }
     $sql='';
 
     if ($mysqli->connect_errno) {
@@ -20,12 +24,18 @@
     
     $sql = "SELECT
                 id,
-                nome
+                nome,
+                data_nascimento,
+                id_sexo
             FROM
                 pessoas
             WHERE
-                ativo = 1
-            ORDER BY nome";        
+                ativo = 1";
+    if(!empty($id)){
+        $sql.=" AND id=?";
+    }
+    $sql.=" ORDER BY nome";
+
     $stmt = $mysqli->prepare($sql);
     if ($stmt === false) {
         $mensagem = "Falha ao preparar a query: " . $mysqli->error;
@@ -36,6 +46,9 @@
         echo json_encode($resposta, JSON_PRETTY_PRINT);
         exit();
     }
+    if(!empty($id)){
+        $stmt -> bind_param('i', $id);
+    }
     if ($stmt->execute()) {
         $resultado = $stmt->get_result();
         $linhas = $resultado ->num_rows;
@@ -43,7 +56,9 @@
             while($row = $resultado->fetch_assoc()) {
                 $pessoasEncontradas[] = [
                     'id' => $row['id'],
-                    'nome' => $row['nome']
+                    'nome' => $row['nome'],
+                    'data_nascimento' => $row['data_nascimento'],
+                    'id_sexo' => $row['id_sexo']
                 ];
             }
             $resultado -> free_result();

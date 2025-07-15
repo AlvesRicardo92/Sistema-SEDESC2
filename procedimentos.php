@@ -163,7 +163,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     </div>
 
     <!-- Modal Editar -->
-    <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editarModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-custom">
@@ -171,6 +171,8 @@ if (!isset($_SESSION['usuario']['id'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="modalMessage" class="alert d-none" role="alert">
+                    </div>
                     <form id="formEditarProcedimento">
                         <input type="hidden" id="editProcedimentoId" name="id">
                         <div class="row mb-3">
@@ -250,7 +252,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     </div>
 
     <!-- Modal Excluir -->
-    <div class="modal fade" id="excluirModal" tabindex="-1" aria-labelledby="excluirModalLabel" aria-hidden="true">
+    <div class="modal fade" id="excluirModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="excluirModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-custom">
