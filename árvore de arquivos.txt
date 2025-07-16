@@ -2,15 +2,30 @@ projeto/
 ├── assets/
 │   ├── css/
 │   │   └── style.css
+│   ├── imagens/
+│   │   └── template.png
 │   ├── js/
-│   │   └── primeiro_acesso_script.js
+│   │   ├── primeiro_acesso_script.js
+│   │   ├── procedimentos_script.js
 │   │   └── script.js
 ├── gerencias/
-│   └── checarLogin.php
-│   └── conexaoBanco.php
-│   └── processa_primeiro_acesso.php
+│   ├── buscar_bairros.php    
+│   ├── buscar_demandantes.php    
+│   ├── buscar_pessoas.php
+│   ├── buscar_sexos.php        
+│   ├── buscar_territorio_bairro.php    
+│   ├── buscar_territorios_ct.php    
+│   ├── checarLogin.php
+│   ├── conexaoBanco.php
+│   ├── processa_primeiro_acesso.php
+│   └── processa_procedimentos.php
 ├── utils/
 │   └── cabecalho.php
+├── .gitignore
+├── árvore de arquivos.txt
 ├── dashboard.php
 ├── index.php
-└── primeiro_acesso.php
+├── logout.php
+├── primeiro_acesso.php
+├── procedimentos.php
+└── readme.md

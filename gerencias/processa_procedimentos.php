@@ -5,7 +5,7 @@ header('Content-Type: application/json; charset=utf-8');
 require "conexaoBanco.php";
 
 if(!isset($_POST['acao'])){
-    return ["mensagem" => "Nenhuma ação especificada.", "dados" => []];
+    echo json_encode( ["mensagem" => "Nenhuma ação especificada.", "dados" => []]);
 }
 else{
     $acao = $mysqli -> real_escape_string($_POST['acao']);
@@ -13,7 +13,7 @@ else{
 
 if($acao==="buscar"){
     if(!isset($_POST['tipo'])|| !isset($_POST['parametroBusca'])){
-        return ["mensagem" => "Nenhum tipo ou parâmetro especificado.", "dados" => []];
+        echo json_encode( ["mensagem" => "Nenhum tipo ou parâmetro especificado.", "dados" => []]);
     }
     else{
         $tipo = $mysqli -> real_escape_string($_POST['tipo']);
@@ -119,12 +119,12 @@ if($acao==="buscar"){
 }
 if($acao==="visualizar"){
     if(!isset($_POST['token'])){
-        return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+        echo json_encode(["mensagem" => "Erro na passagem de dados.", "dados" => []]);
     }
     else{
         $token = $_POST['token'];
         if(!isset($_SESSION['tokens'][$token])){
-            return ["mensagem" => "Procedimento não localizado.", "dados" => []];
+            echo json_encode(["mensagem" => "Procedimento não localizado.", "dados" => []]);
         }
         else{
             $idProcedimento =$_SESSION['tokens'][$token];
@@ -204,12 +204,12 @@ if($acao==="visualizar"){
 }
 if($acao==="editar"){
     if(!isset($_POST['token'])){
-        return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+        echo json_encode( ["mensagem" => "Erro na passagem de dados.", "dados" => []]);
     }
     else{
         $token = $_POST['token'];
         if(!isset($_SESSION['tokens'][$token])){
-            return ["mensagem" => "Procedimento não localizado.", "dados" => []];
+            echo json_encode(["mensagem" => "Procedimento não localizado.", "dados" => []]);
         }
         else{
             $idProcedimento =$_SESSION['tokens'][$token];
@@ -311,7 +311,7 @@ if($acao==="update"){
        !isset($_POST['sexo_genitora']) ||
        !isset($_POST['demandante']))
        {
-            return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+        echo json_encode( ["mensagem" => "Erro na passagem de dados.", "dados" => []]);
        }
     else
     {
@@ -365,7 +365,7 @@ if($acao==="update"){
 if($acao==="desativar"){
     if(!isset($_POST['token']))
        {
-            return ["mensagem" => "Erro na passagem de dados.", "dados" => []];
+        echo json_encode( ["mensagem" => "Erro na passagem de dados.", "dados" => []]);
        }
     else
     {
@@ -406,31 +406,274 @@ if($acao==="desativar"){
         }
     }
 }
+function removerAcentos($texto) {
+    $acentos = array(
+        'à', 'á', 'â', 'ã', 'ä', 'å', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ü', 'ý', 'ÿ',
+        'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ù', 'Ú', 'Û', 'Ü', 'Ý',
+        'º', 'ª',"'" // Exemplos para o símbolo de "grau" ou ordinal, se desejar remover
+    );
+    $semAcentos = array(
+        'a', 'a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y',
+        'A', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y',
+        '', '',' ' // Substituição para os símbolos
+    );
+
+    return str_replace($acentos, $semAcentos, $texto);
+}
+function ultimoNumero($idTerritorio) {
+    $sql = "SELECT MAX(numero_procedimento) as ultimo 
+            FROM procedimentos 
+            WHERE id_territorio = ? AND ano_procedimento = YEAR(NOW())";
+    
+    $stmt = $mysqli->prepare($sql);
+    
+    // Verifica se a preparação da query foi bem-sucedida
+    if ($stmt === false) {
+        // Trate o erro de preparação, por exemplo, logando-o ou lançando uma exceção
+        error_log("Erro na preparação da query: " . $mysqli->error);
+        return 0; // Ou lance uma exceção
+    }
+
+    $stmt->bind_param('i', $idTerritorio);
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+
+        // Se um valor for encontrado, retorna-o, caso contrário, retorna 0
+        if ($row && isset($row['ultimo'])) {
+            return $row['ultimo'];
+        } else {
+            return 0;
+        }
+    } else {
+        // Trate o erro de execução, por exemplo, logando-o
+        //error_log("Erro na execução da query: " . $stmt->error);
+        return 0;
+    }
+}
+if($acao==="novo"){
+    if(!isset($_POST['sexoPessoa']) || $_POST['sexoPessoa']==0 || !isset($_POST['sexoGenitora']) || $_POST['sexoGenitora']==0){
+        echo json_encode(['mensagem' => 'Falha na seleção de Sexo', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['nascimentoGenitora'])||!isset($_POST['nascimentoPessoa'])){
+        echo json_encode(['mensagem' => 'Falha na Data de nascimento', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['selectBairro']) || ($_POST['selectBairro']==0 && (!isset($_POST['inputBairro']) || empty($_POST['inputBairro'])))){
+        echo json_encode(['mensagem' => 'Falha na seleção de Bairro', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['selectTerritorio']) || ($_POST['selectTerritorio']==0 && (!isset($_POST['inputTerritorio']) || empty($_POST['inputTerritorio'])))){
+        echo json_encode(['mensagem' => 'Falha no Território do Bairro', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['selectPessoa']) || ($_POST['selectPessoa']==0 && (!isset($_POST['inputPessoa']) || empty($_POST['inputPessoa'])))){
+        echo json_encode(['mensagem' => 'Falha no nome da Pessoa', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['selectGenitora']) || ($_POST['selectGenitora']==0 && (!isset($_POST['inputGenitora']) || empty($_POST['inputGenitora'])))){
+        echo json_encode(['mensagem' => 'Falha no nome da Genitora', 'dados' => []]);
+        exit();
+    }
+    if(!isset($_POST['selectDemandante']) || ($_POST['selectDemandante']==0 && (!isset($_POST['inputDemandante']) || empty($_POST['inputDemandante'])))){
+        echo json_encode(['mensagem' => 'Falha no Demandante', 'dados' => []]);
+        exit();
+    }
+
+    $selectBairro=$_POST['selectBairro'];
+    $inputBairro=$_POST['inputBairro'];
+    $selectTerritorio=$_POST['selectTerritorio'];
+    $inputTerritorio=$_POST['inputTerritorio'];
+    $selectPessoa=$_POST['selectPessoa'];
+    $inputPessoa=$_POST['inputPessoa'];
+    $nascimentoPessoa=$_POST['nascimentoPessoa'];
+    $sexoPessoa=$_POST['sexoPessoa'];
+    $selectGenitora=$_POST['selectGenitora'];
+    $inputGenitora=$_POST['inputGenitora'];
+    $nascimentoGenitora=$_POST['nascimentoGenitora'];
+    $sexoGenitora=$_POST['sexoGenitora'];
+    $selectDemandante=$_POST['selectDemandante'];
+    $inputDemandante=$_POST['inputDemandante'];
+    $idBairroNovo=0;
+    $idPessoaNova=0;
+    $idGenitoraNova=0;
+    $idDemandanteNovo=0;
+    $numeroProcedimentoNovo=0;
+    $idTerritorioBairro=0;
+    $idProcedimentoNovo=0;
+    $sql='';
 
 
+    $stmt = $mysqli->prepare("SET @user_id = ?");
+    $stmt->bind_param('i', $_SESSION['usuario']['id']);
+    $stmt->execute();
+    $stmt->close();
 
+    if(!empty($inputBairro)){
+        $inputBairro=removerAcentos($inputBairro);
+        $inputBairro=trim($inputBairro);
+        $inputBairro=preg_replace('/\s+/', ' ', $inputBairro);
+        $inputBairro=mb_strtoupper($inputBairro, 'UTF-8');
+        
+        $sql="INSERT INTO bairros(nome, 
+                                  territorio_id, 
+                                  ativo, 
+                                  id_usuario_criacao, 
+                                  data_hora_criacao, 
+                                  id_usuario_atualizacao, 
+                                  data_hora_atualizacao) 
+                            VALUES (?,?,1,?,NOW(),?,NOW())";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('siii', $inputBairro,$selectTerritorio,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+    
+        if ($stmt->execute()) 
+        {
+            $idBairroNovo = $mysqli->insert_id;
+        }
+        else{
+            echo json_encode(['mensagem' => 'Erro 0001', 'dados' => []]);
+            exit();
+        }
+        $stmt->close();
+    }
+    if(!empty($inputPessoa)){
+        $inputPessoa=removerAcentos($inputPessoa);
+        $inputPessoa=trim($inputPessoa);
+        $inputPessoa=preg_replace('/\s+/', ' ', $inputPessoa);
+        $inputPessoa=mb_strtoupper($inputPessoa, 'UTF-8');
 
+        $sql="INSERT INTO pessoas(nome, 
+                                  data_nascimento, 
+                                  id_sexo, 
+                                  ativo, 
+                                  id_usuario_criacao, 
+                                  data_hora_criacao, 
+                                  id_usuario_atualizacao, 
+                                  data_hora_atualizacao) 
+                            VALUES (?,?,?,1,?,NOW(),?,NOW())";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('ssiii', $inputPessoa,$nascimentoPessoa,$sexoPessoa,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+    
+        if ($stmt->execute()) 
+        {
+            $idPessoaNova = $mysqli->insert_id;
+        }
+        else{
+            echo json_encode(['mensagem' => 'Erro 0002. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+            exit();
+        }
+        $stmt->close();
+    }
+    if(!empty($inputGenitora)){
+        $inputGenitora=removerAcentos($inputGenitora);
+        $inputGenitora=trim($inputGenitora);
+        $inputGenitora=preg_replace('/\s+/', ' ', $inputGenitora);
+        $inputGenitora=mb_strtoupper($inputGenitora, 'UTF-8');
 
-// Lógica para adicionar, atualizar e excluir procedimentos (simulado)
-// Em um ambiente real, você usaria um banco de dados
-function add_procedimento(&$db, $data) {
-    $newId = count($db) > 0 ? max(array_column($db, 'id')) + 1 : 1;
-    $newProc = [
-        "id" => $newId,
-        "numero_procedimento" => $data['numero_procedimento'],
-        "ano_procedimento" => $data['ano_procedimento'],
-        "numero_ano" => $data['numero_procedimento'] . '/' . $data['ano_procedimento'],
-        "bairro" => $data['bairro'],
-        "territorio_bairro" => $data['territorio_bairro'],
-        "nome_pessoa" => $data['nome_pessoa'],
-        "data_nascimento_pessoa" => $data['data_nascimento_pessoa'],
-        "sexo_pessoa" => $data['sexo_pessoa'],
-        "nome_genitora" => $data['nome_genitora'],
-        "data_nascimento_genitora" => $data['data_nascimento_genitora'],
-        "sexo_genitora" => $data['sexo_genitora'],
-        "demandante" => $data['demandante']
-    ];
-    $db[] = $newProc;
-    return ["mensagem" => "Sucesso", "dados" => $newProc];
+        $sql="INSERT INTO pessoas(nome, 
+                                  data_nascimento, 
+                                  id_sexo, 
+                                  ativo, 
+                                  id_usuario_criacao, 
+                                  data_hora_criacao, 
+                                  id_usuario_atualizacao, 
+                                  data_hora_atualizacao) 
+                            VALUES (?,?,?,1,?,NOW(),?,NOW())";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('ssiii', $inputGenitora,$nascimentoGenitora,$sexoGenitora,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+    
+        if ($stmt->execute()) 
+        {
+            $idGenitoraNova = $mysqli->insert_id;
+        }
+        else{
+            echo json_encode(['mensagem' => 'Erro 0003. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+            exit();
+        }
+        $stmt->close();
+    }
+    if(!empty($inputDemandante)){
+        $inputDemandante=removerAcentos($inputDemandante);
+        $inputDemandante=trim($inputDemandante);
+        $inputDemandante=preg_replace('/\s+/', ' ', $inputDemandante);
+        $inputDemandante=mb_strtoupper($inputDemandante, 'UTF-8');
+
+        $sql="INSERT INTO demandantes(nome, 
+                                  ativo, 
+                                  id_usuario_criacao, 
+                                  data_hora_criacao, 
+                                  id_usuario_atualizacao, 
+                                  data_hora_atualizacao) 
+                            VALUES (?,1,?,NOW(),?,NOW())";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('sii', $inputDemandante,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+    
+        if ($stmt->execute()) 
+        {
+            $idDemandanteNovo = $mysqli->insert_id;
+        }
+        else{
+            echo json_encode(['mensagem' => 'Erro 0004. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+            exit();
+        }
+        $stmt->close();
+    }
+    $idBairroNovo = empty($idBairroNovo)?$selectBairro:$idBairroNovo;
+    $idPessoaNova=empty($idPessoaNova)?$selectPessoa:$idPessoaNova;
+    $idGenitoraNova=empty($idGenitoraNova)?$selectGenitora:$idGenitoraNova;
+    $idDemandanteNovo=empty($idDemandanteNovo)?$selectDemandante:$idDemandanteNovo;
+    
+    
+    
+    if(selectTerritorio==0){
+        $sql="SELECT id FROM territorios_ct WHERE nome = ?;";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('s',inputTerritorio);    
+        if ($stmt->execute()) 
+        {
+            $resultado = $stmt->get_result();
+            $row = $resultado->fetch_assoc();
+            $idTerritorioBairro = $row['id'];
+        }
+        else{
+            echo json_encode(['mensagem' => 'Erro 0005. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+            exit();
+        }
+
+    }
+
+    $ultimo = ultimoNumero($idTerritorio);
+    $numeroProcedimentoNovo= ultimo+1;
+    echo 'aqui2';
+    exit();
+    $sql="INSERT INTO procedimentos(numero_procedimento, 
+                                    ano_procedimento, 
+                                    id_territorio, 
+                                    id_bairro, 
+                                    id_pessoa, 
+                                    id_genitora_pessoa, 
+                                    id_demandante, 
+                                    ativo, 
+                                    migrado,  
+                                    data_criacao, 
+                                    hora_criacao, 
+                                    id_usuario_criacao, 
+                                    id_usuario_atualizacao, 
+                                    data_hora_atualizacao) 
+                        VALUES (?,YEAR(NOW()),?,?,?,?,?,1,0,CURRENT_DATE(),CURRENT_TIME(),?,?,NOW())";
+    $stmt = $mysqli->prepare($sql);
+    $stmt -> bind_param('iiiiiiii', $numeroProcedimentoNovo,$idTerritorioBairro, $idBairroNovo,$idPessoaNova,$idGenitoraNova,$idDemandanteNovo,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+    if ($stmt->execute()) 
+    {
+        $idProcedimentoNovo = $mysqli->insert_id;
+        echo json_encode(['mensagem' => 'Sucesso', 'dados' => ['id' => $idProcedimentoNovo]]);
+        exit();
+    }
+    else{
+        echo json_encode(['mensagem' => 'Erro 0006. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+        exit();
+    }
 }
 ?>

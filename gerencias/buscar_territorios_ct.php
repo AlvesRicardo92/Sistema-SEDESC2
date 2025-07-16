@@ -22,9 +22,9 @@
                 id,
                 nome
             FROM
-                demandantes
+                territorios_ct
             WHERE
-                ativo = 1
+                ativo = 1 and id < 4
             ORDER BY nome";        
     $stmt = $mysqli->prepare($sql);
     if ($stmt === false) {
@@ -41,7 +41,7 @@
         $linhas = $resultado ->num_rows;
         if($linhas>0){ 
             while($row = $resultado->fetch_assoc()) {
-                $demandantesEncontrados[] = [
+                $territoriosEncontrados[] = [
                     'id' => $row['id'],
                     'nome' => $row['nome']
                 ];
@@ -49,13 +49,13 @@
             $resultado -> free_result();
             $resposta = [
                 "mensagem" => "Sucesso",
-                "dados" => $demandantesEncontrados
+                "dados" => $territoriosEncontrados
             ];
             echo json_encode($resposta, JSON_PRETTY_PRINT);
         }
         else{
             $resultado -> free_result();
-            $mensagem = "Falha. Nenhum demandante encontrado";
+            $mensagem = "Falha. Nenhum território encontrado";
             $dados = [];
             $resposta = [
                 "mensagem" => $mensagem,

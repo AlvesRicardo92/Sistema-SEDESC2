@@ -280,6 +280,8 @@ if (!isset($_SESSION['usuario']['id'])) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="modalMessageNovo" class="alert d-none" role="alert">
+                    </div>
                     <form id="formNovoProcedimento">
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -294,26 +296,34 @@ if (!isset($_SESSION['usuario']['id'])) {
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="new-select-bairros" class="form-label">Bairro</label>
-                                <select class="new-select-bairros form-select" id="new-select-bairros" required>
+                                <select class="new-select-bairros form-select" id="new-select-bairros">
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 classe-input-territorio">
                                 <label for="newTerritorioBairro" class="form-label">Território Bairro</label>
-                                <input type="text" class="form-control" id="newTerritorioBairro" name="territorio_bairro" required>
+                                <input type="text" class="form-control" id="newTerritorioBairro" name="territorio_bairro" disabled>
                             </div>
-                            <div class="col-md-12">
-                                <input type="text" class="form-control mt-3" id="newBairro" name="bairro" placeholder="Digite aqui se não encontou o Bairro acima">
+                            <div class="col-md-6 classe-select-territorio" style="display: none;">
+                                <label for="new-select-territorios" class="form-label">Território Bairro</label>
+                                <select class="new-select-territorios form-select" id="new-select-territorios">
+                                </select>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <input type="text" class="form-control" id="newBairro" name="bairro" placeholder="Digite aqui se não encontou o Bairro acima">
                             </div>
                         </div>
                         <div class="separador-horizontal"><strong>Pessoa</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="new-select-pessoas" class="form-label">Nome Pessoa</label>
-                                <select class="new-select-pessoas form-select" id="new-select-pessoas" required>
+                                <select class="new-select-pessoas form-select" id="new-select-pessoas">
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <div class="col-md-12 mb-2">
+                                <input type="text" class="form-control" id="newPessoa" name="pessoa" placeholder="Digite aqui se não encontou a pessoa acima">
+                            </div>
                             <div class="col-md-6">
                                 <label for="newDataNascimentoPessoa" class="form-label">Data Nascimento Pessoa</label>
                                 <input type="date" class="form-control" id="newDataNascimentoPessoa" name="data_nascimento_pessoa" required>
@@ -323,19 +333,19 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 <select class="new-select-sexos form-select" id="new-select-sexos" required>
                                 </select>
                             </div>
-                            <div class="col-md-12">
-                                <input type="text" class="form-control mt-3" id="newPessoa" name="pessoa" placeholder="Digite aqui se não encontou a pessoa acima">
-                            </div>
                         </div>
                         <div class="separador-horizontal"><strong>Genitora</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="new-select-genitoras" class="form-label">Nome Genitora</label>
-                                <select class="new-select-genitoras form-select" id="new-select-genitoras" required>
+                                <select class="new-select-genitoras form-select" id="new-select-genitoras">
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
+                            <div class="col-md-12 mb-2">
+                                <input type="text" class="form-control" id="newNomeGenitora" name="nome_genitora" placeholder="Digite aqui se não encontou a genitora acima">
+                            </div>
                             <div class="col-md-6">
                                 <label for="newDataNascimentoGenitora" class="form-label">Data Nascimento Genitora</label>
                                 <input type="date" class="form-control" id="newDataNascimentoGenitora" name="data_nascimento_genitora" required>
@@ -345,15 +355,12 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 <select class="new-select-sexos-genitora form-select" id="new-select-sexos-genitora" required>
                                 </select>
                             </div>
-                            <div class="col-md-12">
-                                <input type="text" class="form-control mt-3" id="newNomeGenitora" name="nome_genitora" placeholder="Digite aqui se não encontou a genitora acima">
-                            </div>
                         </div>
                         <div class="separador-horizontal"><strong>Demandante</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <label for="new-select-demandantes" class="form-label">Demandante</label>
-                                <select class="new-select-demandantes form-select" id="new-select-demandantes" required>
+                                <select class="new-select-demandantes form-select" id="new-select-demandantes">
                                 </select>
                             </div>
                             <div class="col-md-12">

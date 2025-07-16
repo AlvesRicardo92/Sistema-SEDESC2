@@ -520,6 +520,7 @@ $(document).ready(function() {
         $('.new-select-sexos').empty();
         $('.new-select-sexos-genitora').empty();
         $('.new-select-demandantes').empty();
+        $('.new-select-territorios').empty();
     
         // Crie um array para armazenar as 'promessas' de cada chamada AJAX
         const ajaxCalls = [];
@@ -619,104 +620,219 @@ $(document).ready(function() {
             $('.new-select-demandantes').append('<option value="0">Erro ao carregar</option>');
         });
         ajaxCalls.push(populateDemandantes);
-        
-        $('#newBairro').on('input', function() { 
-            $('.new-select-bairros').val(0);
-            $('#newDataNascimentoPessoa').val('');
-            $('.new-select-sexos').val(0); 
-        });
-        $('.new-select-bairros').on('change', function() {
-            $('#newBairro').val('');
-        });
 
-        $('#newPessoa').on('input', function() { 
-            $('.new-select-pessoas').val(0);
-            $('#newDataNascimentoPessoa').val('');
-            $('.new-select-sexos').val(0); 
+        // 5. AJAX para popular o select de territorios
+        const populateTerritorios = $.ajax({
+            url: 'gerencias/buscar_territorios_ct.php',
+            method: 'POST',
+            data: {},
+            dataType: 'json'
+        }).done(function(response) {
+            if (response && response.mensagem === "Sucesso" && response.dados && response.dados.length > 0) {
+                $('.new-select-territorios').append('<option value="0" selected>Selecione...</option>');
+                response.dados.forEach(territorio => {
+                    $('.new-select-territorios').append(`<option value="${territorio.id}">${territorio.nome}</option>`);
+                });
+            } else {
+                console.log("falha ao carregar demandantes");
+                $('.new-select-territorios').append('<option value="0">Nenhum demandante encontrado</option>');
+            }
+        }).fail(function() {
+            console.log("erro na requisição de territorios");
+            $('.new-select-territorio').append('<option value="0">Erro ao carregar</option>');
         });
-        $('.new-select-pessoas').on('change', function() {
-            $.ajax({
-                url: 'gerencias/buscar_pessoas.php',
-                method: 'POST',
-                data: {id:$('#select-pessoas').val()},
-                dataType: 'json',
-                success: function(response) {
-                    if (response && response.mensagem === "Sucesso") {
-                        $('#newDataNascimentoPessoa').val(response.dados[0].data_nascimento);
-                        $('.new-select-sexos').val(response.dados[0].id_sexo);
-                        $('#newPessoa').val('');
-                    } else {
-                        showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
-                    }
-                },
-                error: function() {
-                    showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
-                }
-            });
-        });
-        $('#newNomeGenitora').on('input', function() { 
-            $('.new-select-genitoras').val(0);
-            $('#newDataNascimentoGenitora').val('');
-            $('.new-select-sexos-genitora').val(0); 
-        });
-        $('.new-select-genitoras').on('change', function() {
-            $.ajax({
-                url: 'gerencias/buscar_pessoas.php',
-                method: 'POST',
-                data: {id:$('.select-genitoras').val()},
-                dataType: 'json',
-                success: function(response) {
-                    if (response && response.mensagem === "Sucesso") {
-                        $('#newDataNascimentoGenitora').val(response.dados[0].data_nascimento);
-                        $('.new-select-sexos-genitora').val(response.dados[0].id_sexo);
-                        $('#newNomeGenitora').val('');
-                    } else {
-                        showModalMessage('Erro ao atualizar dados da genitora: ' + response.mensagem, 'error');
-                    }
-                },
-                error: function() {
-                    showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
-                }
-            });
-        });
-        $('#newDemandante').on('input', function() { 
-            $('.new-select-demandantes').val(0);
-        });
-        $('.new-select-demandantes').on('change', function() {
-            $('#newDemandante').val('');
-        });
+        ajaxCalls.push(populateTerritorios);
+        
+        
         // Usa $.when() para aguardar TODAS as chamadas AJAX finalizarem
         $.when.apply($, ajaxCalls).done(function() {
             // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas e seus `done` (success) ou `fail` callbacks já rodaram.
-            $('.salvar-procedimento').removeProp('disabled');
+            $('.salvar-procedimento').removeAttr('disabled');
         }).fail(function() {
             console.log("erro nos ajax do novo procedimento");
         });
     });
-    $('#formNovoProcedimento').on('submit', function(e) {
-        e.preventDefault();
-        const formData = $(this).serialize(); // Pega todos os dados do formulário
+    $('#newBairro').on('input', function() { 
+        $('.new-select-bairros').val(0);
+        $('#newDataNascimentoPessoa').val('');
+        $('.new-select-sexos').val(0); 
+        $('.new-select-territorios').val(0); 
+        $('.classe-input-territorio').hide();
+        $('.classe-select-territorio').show();
+    });
+    $('.new-select-bairros').on('change', function() {
+        $('#newBairro').val('');
+        $('.classe-input-territorio').show();
+        $('.classe-select-territorio').hide();
         $.ajax({
-            url: 'gerencias/processa_procedimentos.php',
+            url: 'gerencias/buscar_territorio_bairro.php',
             method: 'POST',
-            data: formData + '&action=add_procedimento', // Adiciona a ação para o PHP
+            data: {id_bairro:$('.new-select-bairros').val()},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
-                    alert('Procedimento adicionado com sucesso!'); // Usar modal customizado
-                    $('#novoProcedimentoModal').modal('hide');
-                    $('#formNovoProcedimento')[0].reset(); // Limpa o formulário
-                    loadProcedimentos(); // Recarrega a tabela
+                    $('#newTerritorioBairro').val(response.dados[0].nome);
                 } else {
-                    alert('Erro ao adicionar procedimento: ' + response.mensagem); // Usar modal customizado
+                    showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
                 }
             },
             error: function() {
-                alert('Erro de comunicação com o servidor ao adicionar.'); // Usar modal customizado
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
             }
         });
     });
 
-    // Opcional: Carregar procedimentos ao carregar a página (sem parâmetros de busca)
-    // loadProcedimentos();
+    $('#newPessoa').on('input', function() { 
+        $('.new-select-pessoas').val(0);
+        $('#newDataNascimentoPessoa').val('');
+        $('.new-select-sexos').val(0); 
+    });
+    $('.new-select-pessoas').on('change', function() {
+        $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {id:$('#select-pessoas').val()},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#newDataNascimentoPessoa').val(response.dados[0].data_nascimento);
+                    $('.new-select-sexos').val(response.dados[0].id_sexo);
+                    $('#newPessoa').val('');
+                } else {
+                    showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
+                }
+            },
+            error: function() {
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+            }
+        });
+    });
+    $('#newNomeGenitora').on('input', function() { 
+        $('.new-select-genitoras').val(0);
+        $('#newDataNascimentoGenitora').val('');
+        $('.new-select-sexos-genitora').val(0); 
+    });
+    $('.new-select-genitoras').on('change', function() {
+        $.ajax({
+            url: 'gerencias/buscar_pessoas.php',
+            method: 'POST',
+            data: {id:$('.select-genitoras').val()},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#newDataNascimentoGenitora').val(response.dados[0].data_nascimento);
+                    $('.new-select-sexos-genitora').val(response.dados[0].id_sexo);
+                    $('#newNomeGenitora').val('');
+                } else {
+                    showModalMessage('Erro ao atualizar dados da genitora: ' + response.mensagem, 'error');
+                }
+            },
+            error: function() {
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+            }
+        });
+    });
+    $('#newDemandante').on('input', function() { 
+        $('.new-select-demandantes').val(0);
+    });
+    $('.new-select-demandantes').on('change', function() {
+        $('#newDemandante').val('');
+    });
+
+
+    const $modalMessageNovo = $('#modalMessageDesativar');
+    // Função para exibir a mensagem no modal
+    function showModalMessageNovo(message, type) {
+        // Limpa classes anteriores e oculta
+        $modalMessageNovo.removeClass('d-none alert-success alert-danger alert-warning').empty();
+
+        // Adiciona a classe de estilo e a mensagem
+        $modalMessageNovo.text(message);
+        if (type === 'success') {
+            $modalMessageNovo.addClass('alert-success');
+        } else if (type === 'error') {
+            $modalMessageNovo.addClass('alert-danger');
+        } else if (type === 'warning') { // Para o status 'aviso' do PHP
+            $modalMessageNovo.addClass('alert-warning');
+        }
+        
+        // Exibe a div de mensagem
+        $modalMessageNovo.removeClass('d-none').slideDown(); // slideDown para uma animação suave
+    }
+
+    // Oculta a mensagem quando o modal é fechado ou antes de uma nova submissão
+    $('#excluirModal').on('hidden.bs.modal', function () {
+        $modalMessageNovo.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
+
+    // Oculta a mensagem quando o modal é exibido (para garantir que esteja limpo ao abrir)
+    $('#excluirModal').on('shown.bs.modal', function () {
+        $modalMessageNovo.addClass('d-none').empty(); // Oculta e limpa a mensagem
+    });
+    $('#formNovoProcedimento').on('submit', function(e) {
+        e.preventDefault();
+        
+        let selectBairro=$('.new-select-bairros').val();
+        let inputBairro=$('#newBairro').val();
+        let selectTerritorio=$('.new-select-territorios').val();
+        let inputTerritorio=$('#newTerritorioBairro').val(); 
+        let selectPessoa=$('.new-select-pessoas').val(); 
+        let inputPessoa=$('#newPessoa').val(); 
+        let nascimentoPessoa=$('#newDataNascimentoPessoa').val(); 
+        let sexoPessoa=$('.new-select-sexos').val(); 
+        let selectGenitora=$('.new-select-genitoras').val(); 
+        let inputGenitora=$('#newNomeGenitora').val(); 
+        let nascimentoGenitora=$('#newDataNascimentoGenitora').val(); 
+        let sexoGenitora=$('.new-select-sexos').val(); 
+        let selectDemandante=$('.new-select-demandantes').val(); 
+        let inputDemandante=$('#newDemandante').val(); 
+        
+
+        console.log('Bairro: '+ selectBairro);
+        console.log('Bairro2: '+ inputBairro);
+        console.log('Territorio: '+ selectTerritorio);
+        console.log('Territorio2: '+ inputTerritorio);
+        console.log('Pessoa: '+ selectPessoa);
+        console.log('Pessoa2: '+ inputPessoa);
+        console.log('Nascimento: ' + nascimentoPessoa);
+        console.log('Sexo: ' + sexoPessoa);
+        console.log('Genitora: ' + selectGenitora);
+        console.log('Genitora2: ' + inputGenitora);
+        console.log('Nascimento: '+ nascimentoGenitora);
+        console.log('Sexo: ' + sexoGenitora);
+        console.log('Demandante: '+ selectDemandante);
+        console.log('Demandante2: '+ inputDemandante);
+
+        $.ajax({
+            url: 'gerencias/processa_procedimentos.php',
+            method: 'POST',
+            data: {acao:'novo',
+                   selectBairro:selectBairro,
+                   inputBairro:inputBairro,
+                   selectTerritorio:selectTerritorio,
+                   inputTerritorio:inputTerritorio,
+                   selectPessoa:selectPessoa,
+                   inputPessoa:inputPessoa,
+                   nascimentoPessoa:nascimentoPessoa,
+                   sexoPessoa:sexoPessoa,
+                   selectGenitora:selectGenitora,
+                   inputGenitora:inputGenitora,
+                   nascimentoGenitora:nascimentoGenitora,
+                   sexoGenitora:sexoGenitora,
+                   selectDemandante:selectDemandante,
+                   inputDemandante:inputDemandante},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#newNumeroProcedimento').val(response.dados[0].id);
+                    showModalMessageNovo('Procedimento cadastrado com sucesso', 'success');
+                } else {
+                    showModalMessageNovo('Erro no cadastro do procedimento', 'error');
+                }
+            },
+            error: function() {
+                showModalMessageNovo('Erro de comunicação com o servidor ao adicionar', 'error');
+            }
+        });
+    });
 });
