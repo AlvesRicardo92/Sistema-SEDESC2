@@ -40,12 +40,12 @@ if (!isset($_SESSION['usuario']['id'])) {
                 <input type="text" class="form-control form-control-custom" id="searchNome" name="nome">
             </div>
             <div class="col-md-3 mb-3">
-                <label for="searchGenitora" class="form-label">Genitora</label>
-                <input type="text" class="form-control form-control-custom" id="searchGenitora" name="genitora">
-            </div>
-            <div class="col-md-3 mb-3">
                 <label for="searchNascimento" class="form-label">Nascimento</label>
                 <input type="date" class="form-control form-control-custom" id="searchNascimento" name="nascimento">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="searchGenitora" class="form-label">Genitora</label>
+                <input type="text" class="form-control form-control-custom" id="searchGenitora" name="genitora">
             </div>
         </div>
 
