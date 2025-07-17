@@ -521,6 +521,12 @@ $(document).ready(function() {
         $('.new-select-sexos-genitora').empty();
         $('.new-select-demandantes').empty();
         $('.new-select-territorios').empty();
+        $('#newBairro').val('');
+        $('#newPessoa').val('');
+        $('#newDataNascimentoPessoa').val('');
+        $('#newNomeGenitora').val('');
+        $('#newDataNascimentoGenitora').val('');
+        $('#newDemandante').val('');
     
         // Crie um array para armazenar as 'promessas' de cada chamada AJAX
         const ajaxCalls = [];
