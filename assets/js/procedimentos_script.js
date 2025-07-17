@@ -648,6 +648,9 @@ $(document).ready(function() {
         $.when.apply($, ajaxCalls).done(function() {
             // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas e seus `done` (success) ou `fail` callbacks já rodaram.
             $('.salvar-procedimento').removeAttr('disabled');
+            $('.new-select-sexos-genitora').attr("disabled",true);
+            $('.new-select-sexos-genitora').val(2);
+
         }).fail(function() {
             console.log("erro nos ajax do novo procedimento");
         });
@@ -691,7 +694,7 @@ $(document).ready(function() {
         $.ajax({
             url: 'gerencias/buscar_pessoas.php',
             method: 'POST',
-            data: {id:$('#select-pessoas').val()},
+            data: {id:$('.new-select-pessoas').val()},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
@@ -710,13 +713,12 @@ $(document).ready(function() {
     $('#newNomeGenitora').on('input', function() { 
         $('.new-select-genitoras').val(0);
         $('#newDataNascimentoGenitora').val('');
-        $('.new-select-sexos-genitora').val(0); 
     });
     $('.new-select-genitoras').on('change', function() {
         $.ajax({
             url: 'gerencias/buscar_pessoas.php',
             method: 'POST',
-            data: {id:$('.select-genitoras').val()},
+            data: {id:$('.new-select-genitoras').val()},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
@@ -740,7 +742,7 @@ $(document).ready(function() {
     });
 
 
-    const $modalMessageNovo = $('#modalMessageDesativar');
+    const $modalMessageNovo = $('#modalMessageNovo');
     // Função para exibir a mensagem no modal
     function showModalMessageNovo(message, type) {
         // Limpa classes anteriores e oculta
@@ -761,12 +763,13 @@ $(document).ready(function() {
     }
 
     // Oculta a mensagem quando o modal é fechado ou antes de uma nova submissão
-    $('#excluirModal').on('hidden.bs.modal', function () {
+    $('#novoProcedimentoModal').on('hidden.bs.modal', function () {
         $modalMessageNovo.addClass('d-none').empty(); // Oculta e limpa a mensagem
+        $('.salvar-procedimento').attr("disabled",true); //Desativa o botão de salvar
     });
 
     // Oculta a mensagem quando o modal é exibido (para garantir que esteja limpo ao abrir)
-    $('#excluirModal').on('shown.bs.modal', function () {
+    $('#novoProcedimentoModal').on('shown.bs.modal', function () {
         $modalMessageNovo.addClass('d-none').empty(); // Oculta e limpa a mensagem
     });
     $('#formNovoProcedimento').on('submit', function(e) {
@@ -786,22 +789,6 @@ $(document).ready(function() {
         let sexoGenitora=$('.new-select-sexos').val(); 
         let selectDemandante=$('.new-select-demandantes').val(); 
         let inputDemandante=$('#newDemandante').val(); 
-        
-
-        console.log('Bairro: '+ selectBairro);
-        console.log('Bairro2: '+ inputBairro);
-        console.log('Territorio: '+ selectTerritorio);
-        console.log('Territorio2: '+ inputTerritorio);
-        console.log('Pessoa: '+ selectPessoa);
-        console.log('Pessoa2: '+ inputPessoa);
-        console.log('Nascimento: ' + nascimentoPessoa);
-        console.log('Sexo: ' + sexoPessoa);
-        console.log('Genitora: ' + selectGenitora);
-        console.log('Genitora2: ' + inputGenitora);
-        console.log('Nascimento: '+ nascimentoGenitora);
-        console.log('Sexo: ' + sexoGenitora);
-        console.log('Demandante: '+ selectDemandante);
-        console.log('Demandante2: '+ inputDemandante);
 
         $.ajax({
             url: 'gerencias/processa_procedimentos.php',
@@ -818,19 +805,28 @@ $(document).ready(function() {
                    selectGenitora:selectGenitora,
                    inputGenitora:inputGenitora,
                    nascimentoGenitora:nascimentoGenitora,
-                   sexoGenitora:sexoGenitora,
                    selectDemandante:selectDemandante,
                    inputDemandante:inputDemandante},
             dataType: 'json',
             success: function(response) {
                 if (response && response.mensagem === "Sucesso") {
-                    $('#newNumeroProcedimento').val(response.dados[0].id);
+                    $('#novoProcedimentoModal').animate({
+                        scrollTop: 0
+                    }, 'slow');
+                    $('#newNumeroProcedimento').val(response.dados.numero);
+                    $('.salvar-procedimento').attr('disabled',true);
                     showModalMessageNovo('Procedimento cadastrado com sucesso', 'success');
                 } else {
-                    showModalMessageNovo('Erro no cadastro do procedimento', 'error');
+                    $('#novoProcedimentoModal').animate({
+                        scrollTop: 0
+                    }, 'slow');
+                    showModalMessageNovo(response.mensagem, 'error');
                 }
             },
             error: function() {
+                $('#novoProcedimentoModal').animate({
+                    scrollTop: 0
+                }, 'slow');
                 showModalMessageNovo('Erro de comunicação com o servidor ao adicionar', 'error');
             }
         });

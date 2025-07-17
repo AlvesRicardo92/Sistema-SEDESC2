@@ -420,7 +420,7 @@ function removerAcentos($texto) {
 
     return str_replace($acentos, $semAcentos, $texto);
 }
-function ultimoNumero($idTerritorio) {
+function ultimoNumero($idTerritorio, $mysqli) {
     $sql = "SELECT MAX(numero_procedimento) as ultimo 
             FROM procedimentos 
             WHERE id_territorio = ? AND ano_procedimento = YEAR(NOW())";
@@ -452,8 +452,23 @@ function ultimoNumero($idTerritorio) {
         return 0;
     }
 }
+function diferencaEntreDatasEmAnos($dataGenitora, $dataPessoa){
+     // Converte as strings de data para objetos DateTime
+     $data1 = new DateTime($dataGenitora);
+     $data2 = new DateTime($dataPessoa);
+
+     // Calcula a diferença entre as duas datas
+     $intervalo = $data1->diff($data2);
+
+     // Obtém o número de anos completos do intervalo
+     $anosDeDiferenca = $intervalo->y;
+
+     // Retorna true se a diferença for menor que o limite
+     return $anosDeDiferenca;
+
+}
 if($acao==="novo"){
-    if(!isset($_POST['sexoPessoa']) || $_POST['sexoPessoa']==0 || !isset($_POST['sexoGenitora']) || $_POST['sexoGenitora']==0){
+    if(!isset($_POST['sexoPessoa']) || $_POST['sexoPessoa']==0 ){
         echo json_encode(['mensagem' => 'Falha na seleção de Sexo', 'dados' => []]);
         exit();
     }
@@ -481,7 +496,10 @@ if($acao==="novo"){
         echo json_encode(['mensagem' => 'Falha no Demandante', 'dados' => []]);
         exit();
     }
-
+    if(diferencaEntreDatasEmAnos($_POST['nascimentoGenitora'],$_POST['nascimentoPessoa'])<14){
+        echo json_encode(['mensagem' => 'Genitora com idade muito baixa em relação à pessoa', 'dados' => []]);
+        exit();
+    }
     $selectBairro=$_POST['selectBairro'];
     $inputBairro=$_POST['inputBairro'];
     $selectTerritorio=$_POST['selectTerritorio'];
@@ -493,7 +511,6 @@ if($acao==="novo"){
     $selectGenitora=$_POST['selectGenitora'];
     $inputGenitora=$_POST['inputGenitora'];
     $nascimentoGenitora=$_POST['nascimentoGenitora'];
-    $sexoGenitora=$_POST['sexoGenitora'];
     $selectDemandante=$_POST['selectDemandante'];
     $inputDemandante=$_POST['inputDemandante'];
     $idBairroNovo=0;
@@ -580,9 +597,9 @@ if($acao==="novo"){
                                   data_hora_criacao, 
                                   id_usuario_atualizacao, 
                                   data_hora_atualizacao) 
-                            VALUES (?,?,?,1,?,NOW(),?,NOW())";
+                            VALUES (?,?,2,1,?,NOW(),?,NOW())";
         $stmt = $mysqli->prepare($sql);
-        $stmt -> bind_param('ssiii', $inputGenitora,$nascimentoGenitora,$sexoGenitora,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+        $stmt -> bind_param('ssii', $inputGenitora,$nascimentoGenitora,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
     
         if ($stmt->execute()) 
         {
@@ -625,12 +642,10 @@ if($acao==="novo"){
     $idGenitoraNova=empty($idGenitoraNova)?$selectGenitora:$idGenitoraNova;
     $idDemandanteNovo=empty($idDemandanteNovo)?$selectDemandante:$idDemandanteNovo;
     
-    
-    
-    if(selectTerritorio==0){
+    if($selectTerritorio==0){
         $sql="SELECT id FROM territorios_ct WHERE nome = ?;";
         $stmt = $mysqli->prepare($sql);
-        $stmt -> bind_param('s',inputTerritorio);    
+        $stmt -> bind_param('s',$inputTerritorio);    
         if ($stmt->execute()) 
         {
             $resultado = $stmt->get_result();
@@ -643,11 +658,13 @@ if($acao==="novo"){
         }
 
     }
+    else{
+        $idTerritorioBairro = $selectTerritorio;
+    }
 
-    $ultimo = ultimoNumero($idTerritorio);
-    $numeroProcedimentoNovo= ultimo+1;
-    echo 'aqui2';
-    exit();
+    $ultimo = ultimoNumero($idTerritorioBairro, $mysqli);
+    $numeroProcedimentoNovo= $ultimo+1;
+    
     $sql="INSERT INTO procedimentos(numero_procedimento, 
                                     ano_procedimento, 
                                     id_territorio, 
@@ -668,7 +685,7 @@ if($acao==="novo"){
     if ($stmt->execute()) 
     {
         $idProcedimentoNovo = $mysqli->insert_id;
-        echo json_encode(['mensagem' => 'Sucesso', 'dados' => ['id' => $idProcedimentoNovo]]);
+        echo json_encode(['mensagem' => 'Sucesso', 'dados' => ['numero' => $numeroProcedimentoNovo]]);
         exit();
     }
     else{
