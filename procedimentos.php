@@ -152,6 +152,15 @@ if (!isset($_SESSION['usuario']['id'])) {
                             <label for="viewDemandante" class="form-label">Demandante</label>
                             <input type="text" class="form-control" id="viewDemandante" disabled>
                         </div>
+                        <div class="row mb-3 divMotivoMigracao" style="display:none">
+                            <div class="col-md-12">
+                                <div class="separador-horizontal"><strong>Migração</strong></div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="viewMotivoMigracao" class="form-label">Motivo Migração</label>
+                                <input type="text" class="form-control" id="viewMotivoMigracao" disabled>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer modal-footer-custom">

@@ -100,6 +100,10 @@ if($acao==="buscar"){
                     'nome_pessoa' => $row['nome_pessoa'],
                     'nascimento_pessoa' => $row['nascimento_pessoa'],
                     'nome_genitora' => $row['nome_genitora'],
+                    'migrado' => $row['migrado'],
+                    'numero_novo' => $row['numero_novo'],
+                    'ano_novo' => $row['ano_novo'],
+                    'territorio_novo' => $row['territorio_novo'],
                     'token'=>$token
                 ];
                 $_SESSION['tokens'][$token] = $row['id'];
@@ -129,42 +133,45 @@ if($acao==="visualizar"){
         else{
             $idProcedimento =$_SESSION['tokens'][$token];
             $sql="SELECT
-                proc.id AS 'id',
-                proc.numero_procedimento AS 'numero',
-                proc.ano_procedimento AS 'ano',
-                t.nome AS 'territorio',
-                b.nome AS 'bairro',
-                p.nome AS 'nome_pessoa',
-                p.data_nascimento AS 'nascimento_pessoa',
-                sp.nome AS 'sexo_pessoa',
-                g.nome AS 'nome_genitora',
-                g.data_nascimento AS 'nascimento_genitora',
-                sg.nome AS 'sexo_genitora',
-                d.nome AS 'demandante',
-                proc.ativo AS 'ativo',
-                proc.migrado AS 'migrado',
-                m.numero_novo AS 'numero_novo',
-                m.ano_novo AS 'ano_novo',
-                m.territorio_novo AS 'territorio_novo'
-            FROM
-                procedimentos proc
-            LEFT JOIN
-                territorios_ct t ON t.id = proc.id_territorio
-            LEFT JOIN
-                bairros b ON b.id = proc.id_bairro
-            LEFT JOIN
-                pessoas p ON p.id = proc.id_pessoa
-            LEFT JOIN
-                pessoas g ON g.id = proc.id_genitora_pessoa
-            LEFT JOIN
-                demandantes d ON d.id = proc.id_demandante
-            LEFT JOIN
-                migracoes m ON m.id = proc.id_migracao
-            LEFT JOIN
-                sexos sp ON sp.id = p.id_sexo
-            LEFT JOIN
-                sexos sg ON sg.id = g.id_sexo
-            WHERE proc.id = ?";
+                    proc.id AS 'id',
+                    proc.numero_procedimento AS 'numero',
+                    proc.ano_procedimento AS 'ano',
+                    t.nome AS 'territorio',
+                    b.nome AS 'bairro',
+                    p.nome AS 'nome_pessoa',
+                    p.data_nascimento AS 'nascimento_pessoa',
+                    sp.nome AS 'sexo_pessoa',
+                    g.nome AS 'nome_genitora',
+                    g.data_nascimento AS 'nascimento_genitora',
+                    sg.nome AS 'sexo_genitora',
+                    d.nome AS 'demandante',
+                    proc.ativo AS 'ativo',
+                    proc.migrado AS 'migrado',
+                    m.numero_novo AS 'numero_novo',
+                    m.ano_novo AS 'ano_novo',
+                    m.territorio_novo AS 'territorio_novo',
+                    mm.nome AS 'motivo_migracao'
+                FROM
+                    procedimentos proc
+                LEFT JOIN territorios_ct t ON
+                    t.id = proc.id_territorio
+                LEFT JOIN bairros b ON
+                    b.id = proc.id_bairro
+                LEFT JOIN pessoas p ON
+                    p.id = proc.id_pessoa
+                LEFT JOIN pessoas g ON
+                    g.id = proc.id_genitora_pessoa
+                LEFT JOIN demandantes d ON
+                    d.id = proc.id_demandante
+                LEFT JOIN migracoes m ON
+                    m.id = proc.id_migracao
+                LEFT JOIN motivos_migracao mm ON
+                    mm.id = m.id_motivo_migracao
+                LEFT JOIN sexos sp ON
+                    sp.id = p.id_sexo
+                LEFT JOIN sexos sg ON
+                    sg.id = g.id_sexo
+                WHERE proc.id = ?";
             $stmt = $mysqli->prepare($sql);
             $stmt -> bind_param('i', $idProcedimento);
 
@@ -184,7 +191,9 @@ if($acao==="visualizar"){
                             'nome_genitora' => $row['nome_genitora'],
                             'nascimento_genitora' => $row['nascimento_genitora'],
                             'sexo_genitora' => $row['sexo_genitora'],
-                            'demandante' => $row['demandante']
+                            'demandante' => $row['demandante'],
+                            'migrado' => $row['migrado'],
+                            'motivo_migracao' => $row['motivo_migracao']
                         ];
                     }
                     echo json_encode(['mensagem' => 'Sucesso', 'dados' => $procedimentosEncontrados]);
