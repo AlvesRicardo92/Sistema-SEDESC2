@@ -10,19 +10,60 @@ if (!isset($_SESSION['usuario']['id'])) {
 require __DIR__ . "/gerencias/conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
 require __DIR__ . '/utils/cabecalho.php'; // Inclui o cabeçalho da página
 
-$territorios = [];
-// Busca os territórios para preencher o select
-$sql_territorios = "SELECT id, nome FROM territorios_ct WHERE ativo = 1 ORDER BY nome ASC";
-$resultado_territorios = $mysqli->query($sql_territorios);
-if ($resultado_territorios) {
-    while ($row = $resultado_territorios->fetch_assoc()) {
-        $territorios[] = $row;
+$aviso = null; // Inicializa a variável do aviso como nula
+$mensagem_erro = ''; // Variável para mensagens de erro/acesso negado
+
+// 1. Obter o ID do aviso da URL e validar
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $aviso_id = (int)$_GET['id']; // Converte para inteiro para segurança
+
+    // 2. Consultar o banco de dados para buscar os detalhes do aviso
+    $sql = "SELECT id, descricao, nome_imagem, id_territorio_exibicao
+            FROM avisos
+            WHERE id = ? AND CURDATE() BETWEEN data_inicio_exibicao AND data_fim_exibicao"; // Verifica se o aviso está ativo
+
+    $stmt = $mysqli->prepare($sql);
+
+    if ($stmt === false) {
+        $mensagem_erro = "Erro na preparação da consulta: " . $mysqli->error;
+    } else {
+        $stmt->bind_param('i', $aviso_id);
+
+        if ($stmt->execute()) {
+            $resultado = $stmt->get_result();
+
+            if ($resultado->num_rows > 0) {
+                $aviso = $resultado->fetch_assoc();
+
+                // 3. Validação de Território
+                $id_territorio_usuario = $_SESSION['usuario']['territorio'];
+                $id_territorio_aviso = $aviso['id_territorio_exibicao'];
+
+                // Lógica de permissão:
+                // Se o território do usuário for '0' (ex: administrador global) ou '1' (ex: território que vê todos os avisos)
+                // OU se o território do usuário for igual ao território do aviso
+                if (($id_territorio_usuario == 0 || $id_territorio_usuario == 1) || ($id_territorio_usuario == $id_territorio_aviso)) {
+                    // Aviso permitido, continue para exibição
+                } else {
+                    $mensagem_erro = "Você não tem permissão para visualizar este aviso.";
+                    $aviso = null; // Anula o aviso para não ser exibido
+                }
+
+            } else {
+                $mensagem_erro = "Aviso não encontrado ou não está mais ativo.";
+            }
+            $resultado->free_result();
+        } else {
+            $mensagem_erro = "Erro na execução da consulta: " . $stmt->error;
+        }
+        $stmt->close();
     }
-    $resultado_territorios->free();
 } else {
-    // Em caso de erro na consulta de territórios, logar ou exibir mensagem
-    error_log("Erro ao buscar territórios: " . $mysqli->error);
+    $mensagem_erro = "ID do aviso inválido ou não especificado.";
 }
+
+// Fechar a conexão com o banco de dados
+$mysqli->close();
 ?>
 
 <!DOCTYPE html>
@@ -30,195 +71,63 @@ if ($resultado_territorios) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Novo Aviso</title>
+    <title>Detalhes do Aviso</title>
     <!-- Incluindo Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Incluindo seu CSS personalizado -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Incluindo Quill CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
-        .container-form {
-            max-width: 900px;
+        .aviso-container {
+            max-width: 800px;
             margin: 30px auto;
-            padding: 30px;
+            padding: 25px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        .form-label {
-            font-weight: bold;
-        }
-        .modal-footer-custom {
-            justify-content: flex-end;
-            border-top: none;
-            padding-top: 20px;
-        }
-        #avisoMessage {
+        .aviso-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
-        /* Estilo para o editor Quill */
-        #editor-container {
-            height: 300px; /* Altura do editor */
-            margin-bottom: 15px;
+        .aviso-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #333;
+            text-align: justify;
+        }
+        .alert-custom-page {
+            max-width: 800px;
+            margin: 30px auto;
         }
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="text-center mb-4 text-primary">Criar Novo Aviso</h2>
-
-        <div class="container-form">
-            <!-- Div para mensagens de sucesso/erro -->
-            <div id="avisoMessage" class="alert d-none" role="alert">
-                <!-- Mensagens serão inseridas aqui pelo JavaScript -->
+        <?php if ($aviso): ?>
+            <div class="aviso-container">
+                <h2 class="text-primary mb-4">Aviso Importante</h2>
+                <?php if (!empty($aviso['nome_imagem'])): ?>
+                    <img src="assets/img/avisos/<?php echo htmlspecialchars($aviso['nome_imagem']); ?>" 
+                         class="aviso-image" 
+                         alt="Imagem do Aviso">
+                <?php endif; ?>
+                <div class="aviso-description">
+                    <p><?php echo nl2br(htmlspecialchars($aviso['descricao'])); ?></p>
+                </div>
+                <a href="dashboard.php" class="btn btn-secondary mt-4">Voltar para o Dashboard</a>
             </div>
-
-            <form id="formCriarAviso" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="carouselImage" class="form-label">Imagem para o Carrossel (opcional)</label>
-                    <input class="form-control" type="file" id="carouselImage" name="carousel_image" accept="image/*">
-                    <small class="form-text text-muted">Será exibida no carrossel do Dashboard.</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="idTerritorioExibicao" class="form-label">Território de Exibição</label>
-                    <select class="form-select" id="idTerritorioExibicao" name="id_territorio_exibicao" required>
-                        <option value="">Selecione o Território</option>
-                        <?php foreach ($territorios as $territorio): ?>
-                            <option value="<?php echo htmlspecialchars($territorio['id']); ?>">
-                                <?php echo htmlspecialchars($territorio['nome']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="dataInicioExibicao" class="form-label">Data de Início da Exibição</label>
-                        <input type="date" class="form-control" id="dataInicioExibicao" name="data_inicio_exibicao" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="dataFimExibicao" class="form-label">Data de Fim da Exibição</label>
-                        <input type="date" class="form-control" id="dataFimExibicao" name="data_fim_exibicao" required>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="avisoContent" class="form-label">Conteúdo do Aviso</label>
-                    <!-- O Quill será inicializado nesta div -->
-                    <div id="editor-container"></div>
-                    <!-- Campo oculto para enviar o conteúdo HTML do Quill -->
-                    <input type="hidden" name="descricao" id="hiddenAvisoContent">
-                </div>
-
-                <div class="modal-footer modal-footer-custom">
-                    <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary" id="btnSalvarAviso">Salvar Aviso</button>
-                </div>
-            </form>
-        </div>
+        <?php else: ?>
+            <div class="alert alert-danger alert-custom-page" role="alert">
+                <strong>Erro:</strong> <?php echo htmlspecialchars($mensagem_erro); ?>
+                <br><a href="dashboard.php" class="btn btn-danger mt-3">Voltar para o Dashboard</a>
+            </div>
+        <?php endif; ?>
     </div>
 
     <!-- Incluindo Bootstrap JS (Bundle com Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Incluindo jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Incluindo Quill JS -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            // Inicializa o Quill no editor-container
-            const quill = new Quill('#editor-container', {
-                theme: 'snow', // Tema 'snow' (barra de ferramentas no topo)
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],        // negrito, itálico, sublinhado, tachado
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],    // listas ordenadas/não ordenadas
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],          // indentação
-                        [{ 'align': [] }],                                // alinhamento
-                        ['link', 'image', 'video'],                       // link, imagem, vídeo (upload de imagem/vídeo requer backend)
-                        ['clean']                                         // remover formatação
-                    ]
-                }
-            });
-
-            // Referência à div de mensagem
-            const $avisoMessage = $('#avisoMessage');
-
-            // Função para exibir a mensagem
-            function showAvisoMessage(message, type) {
-                $avisoMessage.removeClass('d-none alert-success alert-danger').empty();
-                $avisoMessage.html(message); // Usa .html() para permitir formatação
-                if (type === 'success') {
-                    $avisoMessage.addClass('alert-success');
-                } else if (type === 'error') {
-                    $avisoMessage.addClass('alert-danger');
-                }
-                $avisoMessage.removeClass('d-none').slideDown();
-            }
-
-            // Evento de submissão do formulário
-            $('#formCriarAviso').on('submit', function(e) {
-                e.preventDefault(); // Previne o envio padrão do formulário
-
-                // Oculta a mensagem anterior
-                $avisoMessage.addClass('d-none').empty();
-
-                // Obtém o conteúdo HTML do Quill e o coloca no campo hidden
-                const avisoContentHtml = quill.root.innerHTML;
-                $('#hiddenAvisoContent').val(avisoContentHtml);
-
-                // Cria um objeto FormData para lidar com o upload de arquivo e outros dados
-                const formData = new FormData(this);
-                formData.append('acao', 'add_aviso');
-                // A 'descricao' já está no formData via o campo hidden #hiddenAvisoContent
-
-                // Desabilita o botão de salvar para evitar múltiplos cliques
-                $('#btnSalvarAviso').prop('disabled', true).text('Salvando...');
-
-                $.ajax({
-                    url: 'gerencias/processa_avisos.php', // Script PHP que processará os dados
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // Necessário para FormData
-                    contentType: false, // Necessário para FormData
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response && response.status === 'sucesso') {
-                            showAvisoMessage('Aviso criado com sucesso!', 'success');
-                            // Limpa o formulário após o sucesso
-                            $('#formCriarAviso')[0].reset();
-                            quill.setContents([]); // Limpa o conteúdo do editor Quill
-                            // Opcional: Redirecionar para o dashboard ou listar avisos
-                            setTimeout(function() {
-                                window.location.href = 'dashboard.php';
-                            }, 2000); // Redireciona após 2 segundos
-                        } else {
-                            showAvisoMessage('Erro ao criar aviso: ' + (response ? response.mensagem : 'Resposta inválida do servidor.'), 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        let errorMessage = 'Erro de comunicação com o servidor ao criar aviso.';
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            if (errorResponse && errorResponse.mensagem) {
-                                errorMessage = errorResponse.mensagem;
-                            }
-                        } catch (e) {
-                            console.error("Erro ao analisar resposta de erro:", e, xhr.responseText);
-                        }
-                        showAvisoMessage(errorMessage, 'error');
-                    },
-                    complete: function() {
-                        // Reabilita o botão de salvar
-                        $('#btnSalvarAviso').prop('disabled', false).text('Salvar Aviso');
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
