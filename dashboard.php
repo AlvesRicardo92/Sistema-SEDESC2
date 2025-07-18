@@ -17,7 +17,7 @@
         require __DIR__ . '/utils/cabecalho.php';
 
         $contador=0;
-        $stmt = $mysqli->prepare("SELECT descricao, nome_imagem FROM avisos WHERE id_territorio_exibicao=? AND CURDATE() BETWEEN data_inicio_exibicao AND data_fim_exibicao");
+        $stmt = $mysqli->prepare("SELECT id, descricao, nome_imagem FROM avisos WHERE id_territorio_exibicao=? AND CURDATE() BETWEEN data_inicio_exibicao AND data_fim_exibicao");
         $stmt->bind_param('i', $_SESSION['usuario']['territorio']);
 
         if ($stmt->execute()) {
@@ -52,10 +52,12 @@
 
                 while($row = $resultado->fetch_assoc()) {
                         echo "<div class='carousel-item " . ($contador == 0 ? "active" : "") . "'>";
+                        echo "<a href='avisos.php?id=" . $row['id'] . "'>";
                         echo '<img src="assets/imagens/' . (empty($row['nome_imagem']) ? 'template.png' : $row['nome_imagem']) . '" class="d-block w-100" alt="Aviso ' . ($contador + 1) . '">';
                             echo "<div class='carousel-caption d-none d-md-block'>";
                                 echo '<span class="texto-carrossel">' . $row['descricao'] . '</span>';
                             echo "</div>";
+                        echo "</a>";
                         echo "</div>";
                         $contador+=1;
                 }
