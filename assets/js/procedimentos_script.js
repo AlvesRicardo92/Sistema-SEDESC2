@@ -669,8 +669,6 @@ $(document).ready(function() {
         $.when.apply($, ajaxCalls).done(function() {
             // Este bloco só é executado quando TODAS as requisições AJAX foram concluídas e seus `done` (success) ou `fail` callbacks já rodaram.
             $('.salvar-procedimento').removeAttr('disabled');
-            $('.new-select-sexos-genitora').attr("disabled",true);
-            $('.new-select-sexos-genitora').val(2);
 
         }).fail(function() {
             console.log("erro nos ajax do novo procedimento");

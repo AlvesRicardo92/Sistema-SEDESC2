@@ -44,7 +44,7 @@ if (!isset($_SESSION['usuario']['id'])) {
                 <input type="date" class="form-control form-control-custom" id="searchNascimento" name="nascimento">
             </div>
             <div class="col-md-3 mb-3">
-                <label for="searchGenitora" class="form-label">Genitora</label>
+                <label for="searchGenitora" class="form-label">Genitora/Responsável</label>
                 <input type="text" class="form-control form-control-custom" id="searchGenitora" name="genitora">
             </div>
         </div>
@@ -69,7 +69,7 @@ if (!isset($_SESSION['usuario']['id'])) {
                         <th>Território</th>
                         <th>Nome</th>
                         <th>Nascimento</th>
-                        <th>Genitora</th>
+                        <th>Genitora/Responsável</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -130,20 +130,20 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 <input type="text" class="form-control" id="viewSexoPessoa" disabled>
                             </div>
                         </div>
-                        <div class="separador-horizontal"><strong>Genitora</strong></div>
+                        <div class="separador-horizontal"><strong>Genitora/Responsável</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <label for="viewNomeGenitora" class="form-label">Nome Genitora</label>
+                                <label for="viewNomeGenitora" class="form-label">Nome Genitora/Responsável</label>
                                 <input type="text" class="form-control" id="viewNomeGenitora" disabled>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="viewDataNascimentoGenitora" class="form-label">Data Nascimento Genitora</label>
+                                <label for="viewDataNascimentoGenitora" class="form-label">Data Nascimento</label>
                                 <input type="date" class="form-control" id="viewDataNascimentoGenitora" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label for="viewSexoGenitora" class="form-label">Sexo Genitora</label>
+                                <label for="viewSexoGenitora" class="form-label">Sexo</label>
                                 <input type="text" class="form-control" id="viewSexoGenitora" disabled>
                             </div>
                         </div>
@@ -224,10 +224,10 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 </select>
                             </div>
                         </div>
-                        <div class="separador-horizontal"><strong>Genitora</strong></div>
+                        <div class="separador-horizontal"><strong>Genitora/Responsável</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-12">
-                                <label for="select-genitoras" class="form-label">Genitora</label>
+                                <label for="select-genitoras" class="form-label">Genitora/Responsável</label>
                                 <select class="select-genitoras form-select" id="select-genitoras" required>
                                 </select>
                             </div>
@@ -343,24 +343,24 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 </select>
                             </div>
                         </div>
-                        <div class="separador-horizontal"><strong>Genitora</strong></div>
+                        <div class="separador-horizontal"><strong>Genitora/Responsável</strong></div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="new-select-genitoras" class="form-label">Nome Genitora</label>
+                                <label for="new-select-genitoras" class="form-label">Nome Genitora/Responsável</label>
                                 <select class="new-select-genitoras form-select" id="new-select-genitoras">
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-12 mb-2">
-                                <input type="text" class="form-control" id="newNomeGenitora" name="nome_genitora" placeholder="Digite aqui se não encontou a genitora acima">
+                                <input type="text" class="form-control" id="newNomeGenitora" name="nome_genitora" placeholder="Digite aqui se não encontou a genitora/Responsável acima">
                             </div>
                             <div class="col-md-6">
-                                <label for="newDataNascimentoGenitora" class="form-label">Data Nascimento Genitora</label>
+                                <label for="newDataNascimentoGenitora" class="form-label">Data Nascimento</label>
                                 <input type="date" class="form-control" id="newDataNascimentoGenitora" name="data_nascimento_genitora" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="new-select-sexos-genitora" class="form-label">Sexo Genitora</label>
+                                <label for="new-select-sexos-genitora" class="form-label">Sexo</label>
                                 <select class="new-select-sexos-genitora form-select" id="new-select-sexos-genitora" required>
                                 </select>
                             </div>
