@@ -91,7 +91,7 @@ $(document).ready(function() {
                                         </svg>&nbspVisualizar
                                     </button>`;
                                     if(procedimento.migrado==1){
-                                        tableRows+=' Migrado para Território '+procedimento.territorio_novo+" - Número: "+procedimento.numero_novo+"/"+procedimento.ano_novo;
+                                        tableRows+=' Migrado para Território '+ (procedimento.territorio_novo==1?'I':(procedimento.territorio_novo==2?'II':(procedimento.territorio_novo==3?'III':'ERRO'))) +" - Número: "+procedimento.numero_novo+"/"+procedimento.ano_novo;
                                     }
                                     else{
                                         tableRows+=`<button type="button" class="btn btn-warning btn-sm me-1 btn-editar" data-token="${procedimento.token}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -441,6 +441,24 @@ $(document).ready(function() {
             }
         });
     });
+    $('.select-bairros').on('change', function() {
+        $.ajax({
+            url: 'gerencias/buscar_territorio_bairro.php',
+            method: 'POST',
+            data: {id_bairro:$('.select-bairros').val()},
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.mensagem === "Sucesso") {
+                    $('#editTerritorioBairro').val(response.dados[0].nome);
+                } else {
+                    showModalMessage('Erro ao atualizar dados da pessoa: ' + response.mensagem, 'error');
+                }
+            },
+            error: function() {
+                showModalMessage('Erro de comunicação com o servidor ao atualizar.', 'error');
+            }
+        });
+    });
 
     $procedimentosTableBody.on('click', '.btn-excluir', function() {
         // Encontra a linha (<tr>) mais próxima do botão clicado
@@ -535,13 +553,15 @@ $(document).ready(function() {
         $('.new-select-sexos').empty();
         $('.new-select-sexos-genitora').empty();
         $('.new-select-demandantes').empty();
-        $('.new-select-territorios').empty();
+        //$('.new-select-territorios').empty();
         $('#newBairro').val('');
         $('#newPessoa').val('');
         $('#newDataNascimentoPessoa').val('');
         $('#newNomeGenitora').val('');
         $('#newDataNascimentoGenitora').val('');
         $('#newDemandante').val('');
+        $('#newNumeroProcedimento').val('');
+        $('#newTerritorioBairro').val('');
     
         // Crie um array para armazenar as 'promessas' de cada chamada AJAX
         const ajaxCalls = [];
@@ -642,7 +662,7 @@ $(document).ready(function() {
         });
         ajaxCalls.push(populateDemandantes);
 
-        // 5. AJAX para popular o select de territorios
+        /*// 5. AJAX para popular o select de territorios
         const populateTerritorios = $.ajax({
             url: 'gerencias/buscar_territorios_ct.php',
             method: 'POST',
@@ -662,7 +682,7 @@ $(document).ready(function() {
             console.log("erro na requisição de territorios");
             $('.new-select-territorio').append('<option value="0">Erro ao carregar</option>');
         });
-        ajaxCalls.push(populateTerritorios);
+        ajaxCalls.push(populateTerritorios);*/
         
         
         // Usa $.when() para aguardar TODAS as chamadas AJAX finalizarem
@@ -796,7 +816,7 @@ $(document).ready(function() {
         
         let selectBairro=$('.new-select-bairros').val();
         let inputBairro=$('#newBairro').val();
-        let selectTerritorio=$('.new-select-territorios').val();
+        //let selectTerritorio=$('.new-select-territorios').val();
         let inputTerritorio=$('#newTerritorioBairro').val(); 
         let selectPessoa=$('.new-select-pessoas').val(); 
         let inputPessoa=$('#newPessoa').val(); 
@@ -815,7 +835,7 @@ $(document).ready(function() {
             data: {acao:'novo',
                    selectBairro:selectBairro,
                    inputBairro:inputBairro,
-                   selectTerritorio:selectTerritorio,
+                   //selectTerritorio:selectTerritorio,
                    inputTerritorio:inputTerritorio,
                    selectPessoa:selectPessoa,
                    inputPessoa:inputPessoa,
@@ -824,6 +844,7 @@ $(document).ready(function() {
                    selectGenitora:selectGenitora,
                    inputGenitora:inputGenitora,
                    nascimentoGenitora:nascimentoGenitora,
+                   sexoGenitora:sexoGenitora,
                    selectDemandante:selectDemandante,
                    inputDemandante:inputDemandante},
             dataType: 'json',

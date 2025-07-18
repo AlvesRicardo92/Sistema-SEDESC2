@@ -477,7 +477,9 @@ function diferencaEntreDatasEmAnos($dataGenitora, $dataPessoa){
 
 }
 if($acao==="novo"){
-    if(!isset($_POST['sexoPessoa']) || $_POST['sexoPessoa']==0 ){
+    if(!isset($_POST['sexoPessoa']) || $_POST['sexoPessoa']==0 || !isset($_POST['sexoGenitora']) || $_POST['sexoGenitora']==0 ){
+        print_r($_POST['sexoPessoa']);
+        print_r($_POST['sexoGenitora']);
         echo json_encode(['mensagem' => 'Falha na seleção de Sexo', 'dados' => []]);
         exit();
     }
@@ -485,11 +487,11 @@ if($acao==="novo"){
         echo json_encode(['mensagem' => 'Falha na Data de nascimento', 'dados' => []]);
         exit();
     }
-    if(!isset($_POST['selectBairro']) || ($_POST['selectBairro']==0 && (!isset($_POST['inputBairro']) || empty($_POST['inputBairro'])))){
+    if(!isset($_POST['selectBairro']) || $_POST['selectBairro']==0 ){
         echo json_encode(['mensagem' => 'Falha na seleção de Bairro', 'dados' => []]);
         exit();
     }
-    if(!isset($_POST['selectTerritorio']) || ($_POST['selectTerritorio']==0 && (!isset($_POST['inputTerritorio']) || empty($_POST['inputTerritorio'])))){
+    if(!isset($_POST['inputTerritorio']) || empty($_POST['inputTerritorio'])){
         echo json_encode(['mensagem' => 'Falha no Território do Bairro', 'dados' => []]);
         exit();
     }
@@ -506,12 +508,10 @@ if($acao==="novo"){
         exit();
     }
     if(diferencaEntreDatasEmAnos($_POST['nascimentoGenitora'],$_POST['nascimentoPessoa'])<14){
-        echo json_encode(['mensagem' => 'Genitora com idade muito baixa em relação à pessoa', 'dados' => []]);
+        echo json_encode(['mensagem' => 'Genitora/Responsável com idade muito baixa em relação à pessoa', 'dados' => []]);
         exit();
     }
     $selectBairro=$_POST['selectBairro'];
-    $inputBairro=$_POST['inputBairro'];
-    $selectTerritorio=$_POST['selectTerritorio'];
     $inputTerritorio=$_POST['inputTerritorio'];
     $selectPessoa=$_POST['selectPessoa'];
     $inputPessoa=$_POST['inputPessoa'];
@@ -520,6 +520,7 @@ if($acao==="novo"){
     $selectGenitora=$_POST['selectGenitora'];
     $inputGenitora=$_POST['inputGenitora'];
     $nascimentoGenitora=$_POST['nascimentoGenitora'];
+    $sexoGenitora=$_POST['sexoGenitora'];
     $selectDemandante=$_POST['selectDemandante'];
     $inputDemandante=$_POST['inputDemandante'];
     $idBairroNovo=0;
@@ -539,7 +540,7 @@ if($acao==="novo"){
         $stmt->execute();
         $stmt->close();
 
-        if(!empty($inputBairro)){
+        /*if(!empty($inputBairro)){
             $inputBairro=removerAcentos($inputBairro);
             $inputBairro=trim($inputBairro);
             $inputBairro=preg_replace('/\s+/', ' ', $inputBairro);
@@ -565,7 +566,7 @@ if($acao==="novo"){
                 exit();
             }
             $stmt->close();
-        }
+        }*/
         if(!empty($inputPessoa)){
             $inputPessoa=removerAcentos($inputPessoa);
             $inputPessoa=trim($inputPessoa);
@@ -608,9 +609,9 @@ if($acao==="novo"){
                                     data_hora_criacao, 
                                     id_usuario_atualizacao, 
                                     data_hora_atualizacao) 
-                                VALUES (?,?,2,1,?,NOW(),?,NOW())";
+                                VALUES (?,?,?,1,?,NOW(),?,NOW())";
             $stmt = $mysqli->prepare($sql);
-            $stmt -> bind_param('ssii', $inputGenitora,$nascimentoGenitora,$_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
+            $stmt -> bind_param('ssiii', $inputGenitora,$nascimentoGenitora,$sexoGenitora, $_SESSION['usuario']['id'],$_SESSION['usuario']['id']);
         
             if ($stmt->execute()) 
             {
@@ -653,24 +654,18 @@ if($acao==="novo"){
         $idGenitoraNova=empty($idGenitoraNova)?$selectGenitora:$idGenitoraNova;
         $idDemandanteNovo=empty($idDemandanteNovo)?$selectDemandante:$idDemandanteNovo;
         
-        if($selectTerritorio==0){
-            $sql="SELECT id FROM territorios_ct WHERE nome = ?;";
-            $stmt = $mysqli->prepare($sql);
-            $stmt -> bind_param('s',$inputTerritorio);    
-            if ($stmt->execute()) 
-            {
-                $resultado = $stmt->get_result();
-                $row = $resultado->fetch_assoc();
-                $idTerritorioBairro = $row['id'];
-            }
-            else{
-                echo json_encode(['mensagem' => 'Erro 0005. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
-                exit();
-            }
-
+        $sql="SELECT id FROM territorios_ct WHERE nome = ?;";
+        $stmt = $mysqli->prepare($sql);
+        $stmt -> bind_param('s',$inputTerritorio);    
+        if ($stmt->execute()) 
+        {
+            $resultado = $stmt->get_result();
+            $row = $resultado->fetch_assoc();
+            $idTerritorioBairro = $row['id'];
         }
         else{
-            $idTerritorioBairro = $selectTerritorio;
+            echo json_encode(['mensagem' => 'Erro 0005. <strong>NÃO</strong> tente salvar novamente', 'dados' => []]);
+            exit();
         }
 
         $ultimo = ultimoNumero($idTerritorioBairro, $mysqli);

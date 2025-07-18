@@ -312,14 +312,14 @@ if (!isset($_SESSION['usuario']['id'])) {
                                 <label for="newTerritorioBairro" class="form-label">Território Bairro</label>
                                 <input type="text" class="form-control" id="newTerritorioBairro" name="territorio_bairro" disabled>
                             </div>
-                            <div class="col-md-6 classe-select-territorio" style="display: none;">
+                            <!--<div class="col-md-6 classe-select-territorio" style="display: none;">
                                 <label for="new-select-territorios" class="form-label">Território Bairro</label>
                                 <select class="new-select-territorios form-select" id="new-select-territorios">
                                 </select>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <input type="text" class="form-control" id="newBairro" name="bairro" placeholder="Digite aqui se não encontou o Bairro acima">
-                            </div>
+                            </div>-->
                         </div>
                         <div class="separador-horizontal"><strong>Pessoa</strong></div>
                         <div class="row mb-3">
