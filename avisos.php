@@ -75,7 +75,7 @@ $mysqli->close();
     <!-- Incluindo Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Incluindo seu CSS personalizado -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         .aviso-container {
             max-width: 800px;
@@ -126,7 +126,30 @@ $mysqli->close();
             </div>
         <?php endif; ?>
     </div>
-
+    <div class="ql-editor">
+        <p class="ql-align-center">centro</p>
+        <p>esquerda</p>
+        <p class="ql-align-right">direita</p>
+        <p class="ql-align-justify">justificado</p>
+        <p class="ql-align-justify"><br></p>
+        <p class="ql-align-justify"><em>italico</em></p>
+        <p class="ql-align-justify"><strong>negrito</strong></p>
+        <p class="ql-align-justify"><u>underline</u></p>
+        <p class="ql-align-justify"><s>tachado</s></p>
+        <p class="ql-align-justify"><br></p>
+        <ol>
+            <li class="ql-align-justify">aaaaa</li>
+            <li class="ql-align-justify">bbbbb</li>
+        </ol>
+        <p class="ql-align-justify"><br></p>
+        <ul>
+            <li class="ql-align-justify">a1111</li>
+            <li class="ql-align-justify">b1111</li>
+        </ul>
+        <p class="ql-align-justify"><br></p>
+        <p class="ql-align-justify ql-indent-1">tab</p>
+        <p class="ql-align-justify ql-indent-2">tabtab</p>
+    </div>
     <!-- Incluindo Bootstrap JS (Bundle com Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
