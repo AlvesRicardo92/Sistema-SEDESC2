@@ -3,7 +3,7 @@ session_start();
 // Define o cabeçalho para indicar que a resposta será um JSON
 header('Content-Type: application/json');
 
-require "conexaoBanco.php";
+require_once "conexaoBanco.php";
 
 if(!isset($_POST["novaSenha"])){
     $mensagem = "Falha. Nova senha não recebida";

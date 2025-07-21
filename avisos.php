@@ -7,8 +7,8 @@ if (!isset($_SESSION['usuario']['id'])) {
     exit();
 }
 
-require __DIR__ . "/gerencias/conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
-require __DIR__ . '/utils/cabecalho.php'; // Inclui o cabeçalho da página
+require_once __DIR__ . "/gerencias/conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
+require_once __DIR__ . '/utils/cabecalho.php'; // Inclui o cabeçalho da página
 
 $aviso = null; // Inicializa a variável do aviso como nula
 $mensagem_erro = ''; // Variável para mensagens de erro/acesso negado

@@ -10,7 +10,7 @@ if (!isset($_SESSION['usuario']['id'])) {
 // CORREÇÃO DOS CAMINHOS DO REQUIRE
 // Se criar_avisos.php está em 'gerencias/administrativo/',
 // e conexaoBanco.php está em 'gerencias/', então suba um nível.
-require __DIR__ . "/../conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
+require_once __DIR__ . "/../conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
 
 
 $territorios = [];

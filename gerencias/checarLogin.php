@@ -3,7 +3,7 @@
 	ini_set('default_charset','utf-8');
     clearstatcache();
 
-	require "conexaoBanco.php";
+	require_once "conexaoBanco.php";
     session_start();
     if ($mysqli->connect_errno) {
         $mensagem = "Falha na conexão com o banco de dados: " . $mysqli->connect_error;

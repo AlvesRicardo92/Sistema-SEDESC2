@@ -3,7 +3,7 @@
 	ini_set('default_charset','utf-8');
     clearstatcache();
 
-	require "conexaoBanco.php";
+	require_once "conexaoBanco.php";
     session_start();
 
     $id='';

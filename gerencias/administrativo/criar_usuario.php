@@ -16,7 +16,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     <title>Criar Usuário</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body class="p-3 criarUsuario">
     <div class="criarUsuario container">
@@ -48,7 +48,7 @@ if (!isset($_SESSION['usuario']['id'])) {
             <p class="text-muted">A senha inicial será definida como: <strong>Pmsbc@123</strong> (o usuário será obrigado a alterá-la no primeiro acesso).</p>
 
             <!-- Seção de Permissões -->
-            <h5 class="alterarUsuario">Permissões:</h5>
+            <h5 class="criarUsuario">Permissões:</h5>
             <div class="criarUsuario permission-section">
                 <h5>Telas</h5>
                 <div class="criarUsuario permission-row">

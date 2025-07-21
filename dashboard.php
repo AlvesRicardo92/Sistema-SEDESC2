@@ -1,5 +1,5 @@
 <?php
-    require __DIR__ . "/gerencias/conexaoBanco.php";
+    require_once __DIR__ . "/gerencias/conexaoBanco.php";
     session_start();
 ?>
 <!DOCTYPE html>
@@ -14,7 +14,7 @@
 </head>
 <body>
     <?php
-        require __DIR__ . '/utils/cabecalho.php';
+        require_once __DIR__ . '/utils/cabecalho.php';
 
         $contador=0;
         $stmt = $mysqli->prepare("SELECT id, descricao, nome_imagem FROM avisos WHERE id_territorio_exibicao=? AND CURDATE() BETWEEN data_inicio_exibicao AND data_fim_exibicao");

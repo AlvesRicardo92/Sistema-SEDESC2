@@ -23,7 +23,7 @@ if (!isset($_SESSION['usuario']['id'])) {
 </head>
 <body>
     <?php
-        require __DIR__ . '/utils/cabecalho.php';
+        require_once __DIR__ . '/utils/cabecalho.php';
     ?>
 
     <div class="container mt-5">

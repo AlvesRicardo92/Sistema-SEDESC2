@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-require __DIR__ . "/conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
+require_once __DIR__ . "/conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
 
 // Função para sanitizar e normalizar texto (remover acentos, espaços extras, maiúsculas)
 function normalizarTexto($text) {

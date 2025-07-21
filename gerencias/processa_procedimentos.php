@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-require "conexaoBanco.php";
+require_once "conexaoBanco.php";
 
 if(!isset($_POST['acao'])){
     echo json_encode( ["mensagem" => "Nenhuma ação especificada.", "dados" => []]);
