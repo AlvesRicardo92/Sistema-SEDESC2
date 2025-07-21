@@ -2,20 +2,10 @@
 // public/administracao/alterar_pessoa.php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+if (!isset($_SESSION['usuario']['id'])) {
+    header('Location: ../index.php');
     exit();
 }
-
-// Inclua os DAOs e Models necessários para carregar opções de Sexo
-require_once __DIR__ . '/../../app/dao/DatabaseDAO.php';
-require_once __DIR__ . '/../../app/Models/Sexo.php';
-require_once __DIR__ . '/../../app/DAO/SexoDAO.php';
-
-use App\DAO\SexoDAO;
-
-$sexoDAO = new SexoDAO();
-$sexos = $sexoDAO->findAllActive(); // Carrega todos os sexos ativos para o select
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,46 +15,10 @@ $sexos = $sexoDAO->findAllActive(); // Carrega todos os sexos ativos para o sele
     <title>Alterar Pessoa - Administração</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .autocomplete-suggestions {
-            border: 1px solid #ced4da;
-            max-height: 200px;
-            overflow-y: auto;
-            position: absolute;
-            z-index: 1000;
-            background-color: #fff;
-            width: calc(100% - 30px); /* Ajusta à largura do input dentro do padding */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .autocomplete-suggestion-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
-        .autocomplete-suggestion-item:hover {
-            background-color: #e9ecef;
-        }
-        .autocomplete-suggestion-item:last-child {
-            border-bottom: none;
-        }
-        .form-control:disabled {
-            background-color: #e9ecef;
-            opacity: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
-<body>
-    <div class="container">
+<body class='alterarPessoa'>
+    <div class="alterarPessoa container">
         <h4>Alterar Dados da Pessoa</h4>
         <p class="text-muted">Busque uma pessoa pelo nome e altere seus dados.</p>
 
@@ -76,7 +30,7 @@ $sexos = $sexoDAO->findAllActive(); // Carrega todos os sexos ativos para o sele
             <div class="mb-3 position-relative">
                 <label for="nome_pessoa" class="form-label">Nome da Pessoa</label>
                 <input type="text" class="form-control" id="nome_pessoa" name="nome" autocomplete="off" required>
-                <div id="autocomplete-results" class="autocomplete-suggestions"></div>
+                <div id="autocomplete-results" class="alterarPessoa autocomplete-suggestions"></div>
             </div>
 
             <div class="mb-3">
@@ -88,9 +42,9 @@ $sexos = $sexoDAO->findAllActive(); // Carrega todos os sexos ativos para o sele
                 <label for="sexo_id" class="form-label">Sexo</label>
                 <select class="form-select" id="sexo_id" name="sexo_id" disabled>
                     <option value="">Selecione</option>
-                    <?php foreach ($sexos as $sexo): ?>
+                    <!--<?php foreach ($sexos as $sexo): ?>
                         <option value="<?= htmlspecialchars($sexo->getId()) ?>"><?= htmlspecialchars($sexo->getNome()) ?></option>
-                    <?php endforeach; ?>
+                    <?php endforeach; ?>-->
                 </select>
             </div>
 
@@ -188,6 +142,7 @@ $sexos = $sexoDAO->findAllActive(); // Carrega todos os sexos ativos para o sele
                             if (data.length > 0) {
                                 data.forEach(item => {
                                     const div = document.createElement('div');
+                                    div.classList.add('alterarPessoa');
                                     div.classList.add('autocomplete-suggestion-item');
                                     div.textContent = item.nome;
                                     div.dataset.id = item.id;

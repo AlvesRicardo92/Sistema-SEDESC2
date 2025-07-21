@@ -3,7 +3,7 @@ session_start(); // Inicia a sessão para acessar os dados do usuário logado
 
 // Redireciona para a página de login se o usuário não estiver logado
 if (!isset($_SESSION['usuario']['id'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit();
 }
 
@@ -11,9 +11,7 @@ if (!isset($_SESSION['usuario']['id'])) {
 // Se criar_avisos.php está em 'gerencias/administrativo/',
 // e conexaoBanco.php está em 'gerencias/', então suba um nível.
 require __DIR__ . "/../conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
-// Se cabecalho.php está em 'utils/', e criar_avisos.php está em 'gerencias/administrativo/',
-// então suba dois níveis e desça para 'utils/'.
-require __DIR__ . '/../../utils/cabecalho.php'; // Inclui o cabeçalho da página
+
 
 $territorios = [];
 // Busca os territórios para preencher o select
@@ -38,56 +36,30 @@ if ($resultado_territorios) {
     <title>Criar Novo Aviso</title>
     <!-- Incluindo Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Incluindo seu CSS personalizado -->
-    <link rel="stylesheet" href="assets/css/style.css">
     <!-- Incluindo Quill CSS -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <style>
-        .container-form {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .form-label {
-            font-weight: bold;
-        }
-        .modal-footer-custom {
-            justify-content: flex-end;
-            border-top: none;
-            padding-top: 20px;
-        }
-        #avisoMessage {
-            margin-bottom: 20px;
-        }
-        /* Estilo para o editor Quill */
-        #editor-container {
-            height: 300px; /* Altura do editor */
-            margin-bottom: 15px;
-        }
-    </style>
+    <!-- Incluindo seu CSS personalizado -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <div class="container mt-5">
         <h2 class="text-center mb-4 text-primary">Criar Novo Aviso</h2>
 
-        <div class="container-form">
+        <div class="criarAviso container-form">
             <!-- Div para mensagens de sucesso/erro -->
-            <div id="avisoMessage" class="alert d-none" role="alert">
+            <div id="avisoMessage" class="alert d-none criarAviso" role="alert">
                 <!-- Mensagens serão inseridas aqui pelo JavaScript -->
             </div>
 
             <form id="formCriarAviso" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="carouselImage" class="form-label">Imagem para o Carrossel (opcional)</label>
+                    <label for="carouselImage" class="criarAviso form-label">Imagem para o Carrossel (opcional)</label>
                     <input class="form-control" type="file" id="carouselImage" name="carousel_image" accept="image/*">
                     <small class="form-text text-muted">Será exibida no carrossel do Dashboard.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label for="idTerritorioExibicao" class="form-label">Território de Exibição</label>
+                    <label for="idTerritorioExibicao" class="criarAviso form-label">Território de Exibição</label>
                     <select class="form-select" id="idTerritorioExibicao" name="id_territorio_exibicao" required>
                         <option value="">Selecione o Território</option>
                         <?php foreach ($territorios as $territorio): ?>
@@ -100,24 +72,24 @@ if ($resultado_territorios) {
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="dataInicioExibicao" class="form-label">Data de Início da Exibição</label>
+                        <label for="dataInicioExibicao" class="criarAviso form-label">Data de Início da Exibição</label>
                         <input type="date" class="form-control" id="dataInicioExibicao" name="data_inicio_exibicao" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="dataFimExibicao" class="form-label">Data de Fim da Exibição</label>
+                        <label for="dataFimExibicao" class="criarAviso form-label">Data de Fim da Exibição</label>
                         <input type="date" class="form-control" id="dataFimExibicao" name="data_fim_exibicao" required>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="avisoContent" class="form-label">Conteúdo do Aviso</label>
+                    <label for="avisoContent" class="criarAviso form-label">Conteúdo do Aviso</label>
                     <!-- O Quill será inicializado nesta div -->
-                    <div id="editor-container"></div>
+                    <div id="editor-container" class="criarAviso"></div>
                     <!-- Campo oculto para enviar o conteúdo HTML do Quill -->
                     <input type="hidden" name="descricao" id="hiddenAvisoContent">
                 </div>
 
-                <div class="modal-footer modal-footer-custom">
+                <div class="modal-footer criarAviso modal-footer-custom">
                     <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
                     <button type="submit" class="btn btn-primary" id="btnSalvarAviso">Salvar Aviso</button>
                 </div>

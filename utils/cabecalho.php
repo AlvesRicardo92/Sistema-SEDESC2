@@ -42,6 +42,11 @@ $permissoes = $_SESSION['usuario']['permissoes'] ?? '00000000000';
                                     echo '<a class="nav-link" href="procedimentos.php">Procedimento</a>';
                                 echo '</li>';
                             }
+                            if (substr($permissoes, 5, 1) == 1){
+                                echo '<li class="nav-item">';
+                                    echo '<a class="nav-link" href="administracao.php">Administração</a>';
+                                echo '</li>';
+                            }
                         default:
                     }
                 ?>

@@ -3,7 +3,7 @@
 session_start();
 
 // Redireciona para a página de login se o usuário não estiver logado
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['usuario']['id'])) {
     header('Location: index.php');
     exit();
 }
@@ -12,14 +12,16 @@ if (!isset($_SESSION['user_id'])) {
 include 'utils/cabecalho.php';
 
 // Obtém a string de permissões novamente para as permissões do menu lateral
-$permissoesAdministracao = $_SESSION['usuario']['permissoes'] ?? '0000000000'; // Padrão com mais dígitos para novas permissões
+$permissoes = $_SESSION['usuario']['permissoes'] ?? '0000000000'; // Padrão com mais dígitos para novas permissões
 
 // Define as permissões específicas para o menu de administração
 // Supondo que as permissões para o submenu de administração comecem a partir do índice 6
-$canAccessCriarUsuario = hasPermission($permissoesAdministracao, 6);     // Ex: 7º caractere
-$canAccessResetarSenha = hasPermission($permissoesAdministracao, 7);    // Ex: 8º caractere
-$canAccessAlterarPessoa = hasPermission($permissoesAdministracao, 8);   // Ex: 9º caractere
-$canAccessAlterarUsuario = hasPermission($permissoesAdministracao, 9);   // Ex: 10º caractere
+$canAccessCriarUsuario = substr($permissoes, 7, 1);     // Ex: 7º caractere
+$canAccessResetarSenha = substr($permissoes, 8, 1);    // Ex: 8º caractere
+$canAccessAlterarPessoa = substr($permissoes, 9, 1);   // Ex: 9º caractere
+$canAccessAlterarUsuario = substr($permissoes, 10, 1);   // Ex: 10º caractere
+$canAccessAvisos = substr($permissoes, 10, 1);   // Ex: 10º caractere
+
 // Adicione mais variáveis conforme necessário para outras opções do menu lateral
 ?>
 
@@ -31,6 +33,7 @@ $canAccessAlterarUsuario = hasPermission($permissoesAdministracao, 9);   // Ex: 
     <title>Administração - Sistema de Procedimentos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="administracao">
     <div class="wrapper">
@@ -62,6 +65,13 @@ $canAccessAlterarUsuario = hasPermission($permissoesAdministracao, 9);   // Ex: 
                     <i class="fas fa-user-edit me-2"></i> Alterar Usuário
                 </a>
                 <?php endif; ?>
+                <?php if ($canAccessAvisos > 0): // Exemplo: permissão > 0 para Alterar Usuário ?>
+                <a href="gerencias/administrativo/criar_avisos.php" target="admin_iframe" class="list-group-item list-group-item-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-square-fill" style="margin-right:8px" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg> Avisos
+                </a>
+                <?php endif; ?>
 
                 <!-- Adicione mais itens de menu aqui com suas respectivas condições de permissão -->
             </ul>
@@ -70,7 +80,7 @@ $canAccessAlterarUsuario = hasPermission($permissoesAdministracao, 9);   // Ex: 
         <!-- Page Content -->
         <div id="content">
             <!-- O conteúdo da subpágina será carregado aqui -->
-            <iframe name="admin_iframe" id="adminIframe" src="administracao/bem_vindo.php"></iframe>
+            <iframe name="admin_iframe" id="adminIframe" src="gerencias/administrativo/bem_vindo.php"></iframe>
         </div>
     </div>
 

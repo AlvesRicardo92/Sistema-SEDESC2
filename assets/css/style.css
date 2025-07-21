@@ -125,3 +125,246 @@ body {
   .separador-horizontal:not(:empty)::after {
     margin-left: .25em;
   }
+  body.administracao {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+.wrapper {
+    display: flex;
+    flex: 1; /* Permite que o wrapper ocupe o espaço restante */
+}
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: #343a40;
+    color: #fff;
+    transition: all 0.3s;
+    padding-top: 20px;
+    height: calc(100vh - 56px); /* Altura total da viewport menos a altura do navbar */
+    position: sticky; /* Torna o sidebar fixo */
+    top: 56px; /* Ajusta a posição para ficar abaixo do navbar */
+    overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a altura */
+}
+#sidebar .list-group-item {
+    background-color: #343a40;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    transition: background-color 0.2s;
+}
+#sidebar .list-group-item:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+#sidebar .list-group-item.active {
+    background-color: #007bff;
+    color: #fff;
+}
+#content {
+    flex-grow: 1; /* Ocupa o restante do espaço horizontal */
+    padding: 20px;
+    background-color: #fff;
+    border-left: 1px solid #dee2e6;
+}
+#content iframe {
+    width: 100%;
+    height: calc(100vh - 120px); /* Ajusta a altura do iframe para caber na tela */
+    border: none;
+}
+body.alterarPessoa {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+.alterarPessoa.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+.alterarPessoa.autocomplete-suggestions {
+    border: 1px solid #ced4da;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 1000;
+    background-color: #fff;
+    width: calc(100% - 30px); /* Ajusta à largura do input dentro do padding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.alterarPessoa.autocomplete-suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+.alterarPessoa.autocomplete-suggestion-item:hover{
+    background-color: #e9ecef;
+}
+.alterarPessoa.autocomplete-suggestion-item:last-child {
+    border-bottom: none;
+}
+.alterarPessoa.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+body.alterarUsuario {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+.alterarUsuario.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+.alterarUsuario.form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+.alterarUsuario.permission-section {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f8f9fa;
+}
+.alterarUsuario.permission-section h5 {
+    margin-bottom: 1rem;
+    color: #007bff;
+}
+h5.alterarUsuario {
+    color: #007bff;
+}
+.alterarUsuario.permission-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+}
+.alterarUsuario.permission-label {
+    flex-shrink: 0;
+    width: 200px;
+    font-weight: bold;
+}
+.alterarUsuario.permission-options {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.alterarUsuario.admin-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+.alterarUsuario.permission-divider {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid #007bff;
+}
+#alertMessage {
+    margin-top: 15px;
+}
+.criarAviso.container-form {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.criarAviso.form-label {
+    font-weight: bold;
+}
+.criarAviso.modal-footer-custom {
+    justify-content: flex-end;
+    border-top: none;
+    padding-top: 20px;
+}
+.criarAviso#avisoMessage {
+    margin-bottom: 20px;
+}
+/* Estilo para o editor Quill */
+.criarAviso#editor-container {
+    height: 300px; /* Altura do editor */
+    margin-bottom: 15px;
+}
+
+body.criarUsuario {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+.criarUsuario.container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+.criarUsuario.permission-section {
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f8f9fa;
+}
+.criarUsuario.permission-section h5 {
+    margin-bottom: 1rem;
+    color: #007bff;
+}
+h5.criarUsuario {
+    color: #007bff;
+}
+
+/* Estilos para alinhar os radio buttons */
+.criarUsuario.permission-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem; /* Espaçamento entre as linhas */
+    gap: 1rem; /* Espaçamento entre o label e as opções */
+}
+.criarUsuario.permission-label {
+    flex-shrink: 0; /* Evita que o label encolha */
+    width: 200px; /* Largura fixa para o label */
+    font-weight: bold;
+}
+.criarUsuario.permission-options {
+    flex-grow: 1; /* Ocupa o restante do espaço */
+    display: flex;
+    flex-wrap: wrap; /* Permite que as opções quebrem para a próxima linha */
+    gap: 15px; /* Espaçamento entre os radio buttons */
+}
+.criarUsuario.admin-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+.criarUsuario.permission-divider { /* NOVO ESTILO */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid #007bff; /* Linha tracejada para distinção */
+}
+.criarUsuario#alertMessage {
+    margin-top: 15px;
+}
+body.resetarSenha {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: flex-start; /* Alinha ao topo */
+    justify-content: center;
+    min-height: 100vh;
+    padding-top: 20px; /* Espaço para o cabeçalho se ele for fixo */
+}
+.reset-password-container {
+    max-width: 500px;
+    width: 100%;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.reset-password-container h4 {
+    color: #007bff;
+    margin-bottom: 20px;
+}

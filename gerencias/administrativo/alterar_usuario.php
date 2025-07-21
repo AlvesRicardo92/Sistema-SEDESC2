@@ -2,22 +2,10 @@
 // public/administracao/alterar_usuario.php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: ../login.php');
+if (!isset($_SESSION['usuario']['id'])) {
+    header('Location: ../index.php');
     exit();
 }
-
-// Inclua os DAOs e Models necessários para carregar opções de Território
-require_once __DIR__ . '/../../app/dao/DatabaseDAO.php';
-require_once __DIR__ . '/../../app/Models/Territorio.php';
-require_once __DIR__ . '/../../app/DAO/TerritorioDAO.php';
-require_once __DIR__ . '/../../app/Models/Usuario.php'; // Incluir o modelo Usuario
-require_once __DIR__ . '/../../app/DAO/UsuarioDAO.php'; // Incluir o DAO Usuario
-
-use App\DAO\TerritorioDAO;
-
-$territorioDAO = new TerritorioDAO();
-$territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios ativos para o select
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -27,69 +15,10 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
     <title>Alterar Usuário - Administração</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-        .form-control:disabled {
-            background-color: #e9ecef;
-            opacity: 1;
-        }
-        .permission-section {
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: #f8f9fa;
-        }
-        .permission-section h5 {
-            margin-bottom: 1rem;
-            color: #007bff;
-        }
-        h5 {
-            color: #007bff;
-        }
-        .permission-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            gap: 1rem;
-        }
-        .permission-label {
-            flex-shrink: 0;
-            width: 200px;
-            font-weight: bold;
-        }
-        .permission-options {
-            flex-grow: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        .admin-checkbox-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        .permission-divider {
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            border-top: 1px solid #007bff;
-        }
-        #alertMessage {
-            margin-top: 15px;
-        }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
-<body>
-    <div class="container">
+<body classe="alterarUsuario">
+    <div class="alterarUsuario container">
         <h4>Alterar Dados do Usuário</h4>
         <p class="text-muted">Busque um usuário pelo nome de usuário e altere seus dados.</p>
 
@@ -101,23 +30,23 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
             <div class="mb-3 d-flex">
                 <div class="flex-grow-1 me-2">
                     <label for="username_search" class="form-label">Nome de Usuário</label>
-                    <input type="text" class="form-control" id="username_search" name="username_search" required>
+                    <input type="text" class="alterarUsuario form-control" id="username_search" name="username_search" required>
                 </div>
                 <button type="button" class="btn btn-primary align-self-end mb-3" id="btnBuscarUsuario"><i class="fas fa-search"></i> Buscar</button>
             </div>
 
             <div class="mb-3">
                 <label for="nomeCompleto" class="form-label">Nome Completo</label>
-                <input type="text" class="form-control" id="nomeCompleto" name="fullName" disabled>
+                <input type="text" class="alterarUsuario form-control" id="nomeCompleto" name="fullName" disabled>
             </div>
 
             <div class="mb-3">
                 <label for="territorio_id" class="form-label">Território</label>
                 <select class="form-select" id="territorio_id" name="territorio_id" disabled>
                     <option value="">Selecione um Território</option>
-                    <?php foreach ($territorios as $territorio): ?>
+                    <!--<?php foreach ($territorios as $territorio): ?>
                         <option value="<?= htmlspecialchars($territorio->getId()) ?>"><?= htmlspecialchars($territorio->getNome()) ?></option>
-                    <?php endforeach; ?>
+                    <?php endforeach; ?>-->
                 </select>
             </div>
 
@@ -131,12 +60,12 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
             </div>
 
             <!-- Seção de Permissões -->
-            <h5>Permissões:</h5>
-            <div class="permission-section">
+            <h5 class="alterarUsuario">Permissões:</h5>
+            <div class="alterarUsuario permission-section">
                 <h5>Telas</h5>
-                <div class="permission-row">
-                    <div class="permission-label">Procedimentos</div>
-                    <div class="permission-options">
+                <div class="alterarUsuario permission-row">
+                    <div class="alterarUsuario permission-label">Procedimentos</div>
+                    <div class="alterarUsuario permission-options">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input perm-radio" type="radio" name="perm_0" id="perm_0_none" value="0" disabled>
                             <label class="form-check-label" for="perm_0_none">Nenhum</label>
@@ -159,11 +88,11 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
                         </div>
                     </div>
                 </div>
-                <hr class="permission-divider">
+                <hr class="alterarUsuario permission-divider">
 
-                <div class="permission-row">
-                    <div class="permission-label">Ofício Recebido</div>
-                    <div class="permission-options">
+                <div class="alterarUsuario permission-row">
+                    <div class="alterarUsuario permission-label">Ofício Recebido</div>
+                    <div class="alterarUsuario permission-options">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input perm-radio" type="radio" name="perm_1" id="perm_1_none" value="0" disabled>
                             <label class="form-check-label" for="perm_1_none">Nenhum</label>
@@ -186,11 +115,11 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
                         </div>
                     </div>
                 </div>
-                <hr class="permission-divider">
+                <hr class="alterarUsuario permission-divider">
 
-                <div class="permission-row">
-                    <div class="permission-label">Ofício Expedido</div>
-                    <div class="permission-options">
+                <div class="alterarUsuario permission-row">
+                    <div class="alterarUsuario permission-label">Ofício Expedido</div>
+                    <div class="alterarUsuario permission-options">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input perm-radio" type="radio" name="perm_2" id="perm_2_none" value="0" disabled>
                             <label class="form-check-label" for="perm_2_none">Nenhum</label>
@@ -213,11 +142,11 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
                         </div>
                     </div>
                 </div>
-                <hr class="permission-divider">
+                <hr class="alterarUsuario permission-divider">
 
-                <div class="permission-row">
-                    <div class="permission-label">Denúncia</div>
-                    <div class="permission-options">
+                <div class="alterarUsuario permission-row">
+                    <div class="alterarUsuario permission-label">Denúncia</div>
+                    <div class="alterarUsuario permission-options">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input perm-radio" type="radio" name="perm_3" id="perm_3_none" value="0" disabled>
                             <label class="form-check-label" for="perm_3_none">Nenhum</label>
@@ -240,11 +169,11 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
                         </div>
                     </div>
                 </div>
-                <hr class="permission-divider">
+                <hr class="alterarUsuario permission-divider">
 
-                <div class="permission-row">
-                    <div class="permission-label">Atendimento Presencial</div>
-                    <div class="permission-options">
+                <div class="alterarUsuario permission-row">
+                    <div class="alterarUsuario permission-label">Atendimento Presencial</div>
+                    <div class="alterarUsuario permission-options">
                         <div class="form-check form-check-inline">
                             <input class="form-check-input perm-radio" type="radio" name="perm_4" id="perm_4_none" value="0" disabled>
                             <label class="form-check-label" for="perm_4_none">Nenhum</label>
@@ -269,10 +198,10 @@ $territorios = $territorioDAO->findAllActive(); // Carrega todos os territórios
                 </div>
             </div>
 
-            <div class="permission-section">
-                <h5>Administração</h5>
+            <div class="alterarUsuario permission-section">
+            <h5 class="alterarUsuario">Administração</h5>
                 <p class="text-muted">Acesso ao menu "Administração" no cabeçalho será concedido se qualquer uma das opções abaixo for marcada.</p>
-                <div class="admin-checkbox-grid">
+                <div class="alterarUsuario admin-checkbox-grid">
                     <div class="form-check">
                         <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_6_criar_usuario" data-position="6" value="1" disabled>
                         <label class="form-check-label" for="perm_6_criar_usuario">Criar Usuário</label>
