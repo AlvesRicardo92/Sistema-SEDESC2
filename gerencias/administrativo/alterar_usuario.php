@@ -32,7 +32,7 @@ if (!isset($_SESSION['usuario']['id'])) {
                     <label for="username_search" class="form-label">Nome de Usuário</label>
                     <input type="text" class="alterarUsuario form-control" id="username_search" name="username_search" required>
                 </div>
-                <button type="button" class="btn btn-primary align-self-end mb-3" id="btnBuscarUsuario"><i class="fas fa-search"></i> Buscar</button>
+                <button type="button" class="btn btn-primary align-self-end mb-3" id="btnBuscarUsuario" style="margin-top:30px"><i class="fas fa-search"></i> Buscar</button>
             </div>
 
             <div class="mb-3">
