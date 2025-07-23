@@ -34,7 +34,9 @@ if (!isset($_SESSION['usuario']['id'])) {
             <label for="nome_completo" class="form-label">Nome Completo</label>
             <input type="text" class="form-control" id="nome_completo" name="nome_completo" disabled>
         </div>
-        <div id="mensagemFeedback" class="alert d-none" role="alert"></div>
+        <div class="row mt-3">
+            <div id="mensagemFeedback" class="alert d-none" role="alert"></div>
+        </div>
         <div class="row">
             <button class="btn btn-primary w-100 mt-3 resetarSenha" disabled>Redefinir Senha</button>
         </div>

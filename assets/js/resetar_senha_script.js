@@ -1,12 +1,19 @@
 $(document).ready(function() {
     const $mensagem = $('#mensagemFeedback');
     $mensagem.addClass('d-none').empty();
+    let usuario ='';
+
     $('button.buscarUsuario').on('click', function(){
-        if ($('#username_to_reset').length<3){
+        console.log($('#username_to_reset').val().length);
+        console.log($.isNumeric($("#username_to_reset").val()));
+        if ($('#username_to_reset').val().length<3 || !$.isNumeric($("#username_to_reset").val())){
             exibirMensagem("Usuário inválido","error");
+            setTimeout(function() {
+                $mensagem.addClass('d-none').empty();
+            }, 3000);
         }
         else{
-            let usuario =$('#username_to_reset').val();
+            usuario =$('#username_to_reset').val();
             $.ajax({
                 url: '../buscar_usuarios.php',
                 method: 'POST', 
@@ -14,8 +21,15 @@ $(document).ready(function() {
                         usuario:usuario},
                 dataType: 'json',
                 success: function(resposta) {
-                    if(resposta.mensagem=="Sucesso"){                        
-                        $('#nome_completo').val(resposata.dados[0].nome);
+                    if(resposta.mensagem=="Sucesso"){ 
+                        console.log(resposta.dados[0].ativo);
+                        if(resposta.dados[0].ativo ==0){
+                            exibirMensagem("Usuário desativado. Não é possível redefinir a senha","error");
+                        }
+                        else{
+                            $('#nome_completo').val(resposta.dados[0].nome);
+                            $('button.resetarSenha').removeAttr('disabled')
+                        } 
                     }
                     else{
                         exibirMensagem(resposta.mensagem,"error");
@@ -35,69 +49,37 @@ $(document).ready(function() {
         }
     });
     $('button.resetarSenha').on('click', function(){
-        if ($('#username_to_reset').length<3){
+        if ($('#username_to_reset').val().length<3  || !$.isNumeric($("#username_to_reset").val())){
             exibirMensagem("Usuário inválido","error");
         }        
-        else if(empty($('nome_completo').val())){
+        else if($('#nome_completo').val().length<1){
             exibirMensagem("Primeiro busque pelo usuário","error");
         }
         else{
             usuario=$('#username_to_reset').val();
         }
-
-        
-        nome=$('#nomeCompleto').val();
-        territorio=$('#territorio_id').val();
-        permissoes=$('[name=perm_0]:checked').val();
-        permissoes+=$('[name=perm_1]:checked').val();
-        permissoes+=$('[name=perm_2]:checked').val();
-        permissoes+=$('[name=perm_3]:checked').val();
-        permissoes+=$('[name=perm_4]:checked').val();
-        $('input[type=checkbox]').each(function(){
-            if ($(this).is(':checked')) {
-                permissoesAdm+='1';
-            }
-            else{
-                permissoesAdm+='0';
-            }
-        });
-
-        
-
-        
+        setTimeout(function() {
+            $mensagem.addClass('d-none').empty();
+        }, 3000);
 
         $.ajax({
-            url: '../processa_criar_usuario.php',
+            url: '../processa_resetar_senha.php',
             method: 'POST', 
-            data: { usuario:usuario,
-                    nome:nome,
-                    permissoes:permissoes,
-                    territorio:territorio,
-                    permissoesAdm:permissoesAdm
-                },
+            data: { usuario:usuario},
             dataType: 'json',
             success: function(resposta) {
                 if(resposta.mensagem=="Sucesso"){
-                    exibirMensagem("Usuário cadastrado com sucesso","success");
-                    $('button.criarUsuario').attr('disabled',true)
-                    $('#nomeUsuario').val('');
-                    $('#nomeCompleto').val('');
-                    $('#territorio_id').val(0);
-                    $('input[name="perm_0"][value="0"]').prop('checked', true);
-                    $('input[name="perm_1"][value="0"]').prop('checked', true);
-                    $('input[name="perm_2"][value="0"]').prop('checked', true);
-                    $('input[name="perm_3"][value="0"]').prop('checked', true);
-                    $('input[name="perm_4"][value="0"]').prop('checked', true);
-                    $('#perm_6_criar_usuario').prop('checked', false);
-                    $('#perm_7_resetar_senha').prop('checked', false);
-                    $('#perm_8_alterar_pessoa').prop('checked', false);
+                    exibirMensagem("Senha redefinida para Pmsbc@123","success");
+                    $('button.resetarSenha').attr('disabled',true);
+                    $('#username_to_reset').val('');
+                    $('#nome_completo').val('');
                 }
                 else{
                     exibirMensagem(resposta.mensagem,"error");
                 }
                 setTimeout(function() {
                     $mensagem.addClass('d-none').empty();
-                    $('button.criarUsuario').removeAttr('disabled')
+                    $('button.resetarSenha').removeAttr('disabled')
                 }, 3000);
 
             },

@@ -64,13 +64,14 @@
             if($linhas>0){ 
                 while($row = $resultado->fetch_assoc()) {
                     $usuarioEncontrado[] = [
-                        'nome' => $row['nome']
+                        'nome' => $row['nome'],
+                        'ativo' => $row['ativo']
                     ];
                 }
                 $resultado -> free_result();
                 $resposta = [
                     "mensagem" => "Sucesso",
-                    "dados" => $usuarioEncontrados
+                    "dados" => $usuarioEncontrado
                 ];
                 echo json_encode($resposta, JSON_PRETTY_PRINT);
             }

@@ -38,7 +38,7 @@ $(document).ready(function() {
             success: function(resposta) {
                 if(resposta.mensagem=="Sucesso"){
                     exibirMensagem("Usuário cadastrado com sucesso","success");
-                    $('button.criarUsuario').attr('disabled',true)
+                    $('button.criarUsuario').attr('disabled',true);
                     $('#nomeUsuario').val('');
                     $('#nomeCompleto').val('');
                     $('#territorio_id').val(0);
