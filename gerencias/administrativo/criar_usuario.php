@@ -43,7 +43,7 @@ if($jsonDecodificado['mensagem']=="Sucesso"){
         <div class="mb-3">
             <label for="territorio_id" class="form-label">Território</label>
             <select class="form-select" id="territorio_id" name="territorio_id" required>
-                <option value="">Selecione um Território</option>
+                <option value="0">Selecione um Território</option>
                 <?php 
                     if(!empty($dados)){
                         foreach($dados as $territorio){

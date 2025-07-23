@@ -57,12 +57,25 @@ $(document).ready(function() {
             success: function(resposta) {
                 if(resposta.mensagem=="Sucesso"){
                     exibirMensagem("Usuário cadastrado com sucesso","success");
+                    $('button.criarUsuario').attr('disabled',true)
+                    $('#nomeUsuario').val('');
+                    $('#nomeCompleto').val('');
+                    $('#territorio_id').val(0);
+                    $('input[name="perm_0"][value="0"]').prop('checked', true);
+                    $('input[name="perm_1"][value="0"]').prop('checked', true);
+                    $('input[name="perm_2"][value="0"]').prop('checked', true);
+                    $('input[name="perm_3"][value="0"]').prop('checked', true);
+                    $('input[name="perm_4"][value="0"]').prop('checked', true);
+                    $('#perm_6_criar_usuario').prop('checked', false);
+                    $('#perm_7_resetar_senha').prop('checked', false);
+                    $('#perm_8_alterar_pessoa').prop('checked', false);
                 }
                 else{
-                    exibirMensagem("Erro ao cadastrar usuário","error");
+                    exibirMensagem(resposta.mensagem,"error");
                 }
                 setTimeout(function() {
                     $mensagem.addClass('d-none').empty();
+                    $('button.criarUsuario').removeAttr('disabled')
                 }, 3000);
 
             },

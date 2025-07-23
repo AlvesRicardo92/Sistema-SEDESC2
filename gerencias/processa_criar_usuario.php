@@ -32,7 +32,7 @@ else{
             exit();
         }
     }
-    if($_POST["usuario"] === 0){
+    if($_POST["territorio"] == "0"){
         $mensagem = "Território inválido";
         $dados = [];
         $resposta = [
