@@ -67,72 +67,94 @@ else{
     
     $usuario=$mysqli -> real_escape_string($_POST["usuario"]);
     $usuario = preg_replace('/[.\-\/\\\\s]/', ' ', $usuario);
-    
-    $nome=$mysqli -> real_escape_string($_POST["nome"]);
-    $nome = removerAcentos($nome);
-    $nome = preg_replace('/\s+/', ' ', $nome);
-    $nome = trim($nome);
-    $nome = mb_strtoupper($nome, 'UTF-8');
-
-    $territorio=$mysqli -> real_escape_string($_POST["territorio"]);
-    $permissoes=$mysqli -> real_escape_string($_POST["permissoes"]);
-    $permissoesAdm=$mysqli -> real_escape_string($_POST["permissoesAdm"]);
-
-    if (str_contains($permissoesAdm, '1')) {
-        $permissoes.='1';
-        $permissoes.=$permissoesAdm;
-    }
-    else {
-        $permissoes.='0';
-        $permissoes.=$permissoesAdm;
-    }
-    $permissoes = "E" . $permissoes;
-    $mysqli->begin_transaction();
-    $sql='INSERT INTO usuarios(nome, 
-                               usuario, 
-                               senha, 
-                               territorio_id, 
-                               ativo, 
-                               permissoes, 
-                               primeiro_acesso, 
-                               id_usuario_criacao, 
-                               data_hora_criacao, 
-                               id_usuario_atualizacao, 
-                               data_hora_atualizacao) 
-           VALUES (?,?,?,?,1,?,1,?,NOW(),?,NOW())';
+    $sql='SELECT usuario FROM usuarios WHERE usuario=?;';
     $stmt = $mysqli->prepare($sql);
-    $senha=password_hash("Pmsbc@123", PASSWORD_DEFAULT);
-    $stmt->bind_param('sssisii', 
-                        $nome,
-                        $usuario,
-                        $senha,
-                        $territorio,
-                        $permissoes,
-                        $idUsuario,
-                        $idUsuario);
-
+    $stmt->bind_param('s', $usuario);
     if ($stmt->execute()) {
-        $mysqli->commit();
-        $mensagem = "Sucesso";
-        $dados = ["Usuário cadastrado com sucesso"];
-        $resposta = [
-            "mensagem" => $mensagem,
-            "dados" => $dados
-        ];
-        echo json_encode($resposta, JSON_PRETTY_PRINT);
+        $resultado = $stmt->get_result();
+        $linhas = $resultado ->num_rows;
+        if($linhas > 0){
+            $mensagem = "Não é possível cadastrar. Usuário já cadastrado";
+            $dados = [""];
+            $resposta = [
+                "mensagem" => $mensagem,
+                "dados" => $dados
+            ];
+            $stmt->close();
+            $mysqli->close();
+            echo json_encode($resposta, JSON_PRETTY_PRINT);
+        }
+        else{
+            
+            $nome= $mysqli -> real_escape_string($_POST["nome"]);
+            $nome = removerAcentos($nome);
+            $nome = preg_replace('/\s+/', ' ', $nome);
+            $nome = trim($nome);
+            $nome = mb_strtoupper($nome, 'UTF-8');
+
+            $territorio=$mysqli -> real_escape_string($_POST["territorio"]);
+            $permissoes=$mysqli -> real_escape_string($_POST["permissoes"]);
+            $permissoesAdm=$mysqli -> real_escape_string($_POST["permissoesAdm"]);
+
+            if (str_contains($permissoesAdm, '1')) {
+                $permissoes.='1';
+                $permissoes.=$permissoesAdm;
+            }
+            else {
+                $permissoes.='0';
+                $permissoes.=$permissoesAdm;
+            }
+            $permissoes = "E" . $permissoes;
+            $mysqli->begin_transaction();
+            $sql='INSERT INTO usuarios(nome, 
+                                    usuario, 
+                                    senha, 
+                                    territorio_id, 
+                                    ativo, 
+                                    permissoes, 
+                                    primeiro_acesso, 
+                                    id_usuario_criacao, 
+                                    data_hora_criacao, 
+                                    id_usuario_atualizacao, 
+                                    data_hora_atualizacao) 
+                VALUES (?,?,?,?,1,?,1,?,NOW(),?,NOW())';
+            $stmt = $mysqli->prepare($sql);
+            $senha=password_hash("Pmsbc@123", PASSWORD_DEFAULT);
+            $stmt->bind_param('sssisii', 
+                                $nome,
+                                $usuario,
+                                $senha,
+                                $territorio,
+                                $permissoes,
+                                $idUsuario,
+                                $idUsuario);
+
+            if ($stmt->execute()) {
+                $mysqli->commit();
+                $mensagem = "Sucesso";
+                $dados = ["Usuário cadastrado com sucesso"];
+                $resposta = [
+                    "mensagem" => $mensagem,
+                    "dados" => $dados
+                ];
+                echo json_encode($resposta, JSON_PRETTY_PRINT);
+            }
+            else{
+                $mysqli->rollback();
+                $mensagem = "Falha ao cadastrar o usuário";
+                $dados = [];
+                $resposta = [
+                    "mensagem" => $mensagem,
+                    "dados" => $dados
+                ];
+                echo json_encode($resposta, JSON_PRETTY_PRINT);
+            }
+            $stmt->close();
+            $mysqli->close();
+        }
     }
-    else{
-        $mysqli->rollback();
-        $mensagem = "Falha ao cadastrar o usuário";
-        $dados = [];
-        $resposta = [
-            "mensagem" => $mensagem,
-            "dados" => $dados
-        ];
-        echo json_encode($resposta, JSON_PRETTY_PRINT);
-    }
-    $stmt->close();
-    $mysqli->close();
+    
+    
 }
 function validarCPF(string $cpf): bool
 {

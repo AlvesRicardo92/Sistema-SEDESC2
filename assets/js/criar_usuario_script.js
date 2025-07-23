@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    const $mensagem = $('#mensagemFeedback');
+    $mensagem.addClass('d-none').empty();
     $('button.criarUsuario').on('click', function(){
         var usuario;
         var nome;
@@ -22,9 +24,6 @@ $(document).ready(function() {
                 permissoesAdm+='0';
             }
         });
-
-        const $mensagem = $('#mensagemFeedback');
-        $mensagem.addClass('d-none').empty();
 
         $.ajax({
             url: '../processa_criar_usuario.php',
