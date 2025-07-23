@@ -1,12 +1,51 @@
 $(document).ready(function() {
-    $('button.criarUsuario').on('click', function(){
-        var usuario;
-        var nome;
-        var territorio;
-        var permissoes;
-        var permissoesAdm='';
+    const $mensagem = $('#mensagemFeedback');
+    $mensagem.addClass('d-none').empty();
+    $('button.buscarUsuario').on('click', function(){
+        if ($('#username_to_reset').length<3){
+            exibirMensagem("Usuário inválido","error");
+        }
+        else{
+            let usuario =$('#username_to_reset').val();
+            $.ajax({
+                url: '../buscar_usuarios.php',
+                method: 'POST', 
+                data: { tipo:'usuario',
+                        usuario:usuario},
+                dataType: 'json',
+                success: function(resposta) {
+                    if(resposta.mensagem=="Sucesso"){                        
+                        $('#nome_completo').val(resposata.dados[0].nome);
+                    }
+                    else{
+                        exibirMensagem(resposta.mensagem,"error");
+                    }
+                    setTimeout(function() {
+                        $mensagem.addClass('d-none').empty();
+                    }, 3000);
+    
+                },
+                error: function() {            
+                    exibirMensagem("Erro de execução","error");
+                    setTimeout(function() {
+                        $mensagem.addClass('d-none').empty();
+                    }, 3000);
+                }
+            });
+        }
+    });
+    $('button.resetarSenha').on('click', function(){
+        if ($('#username_to_reset').length<3){
+            exibirMensagem("Usuário inválido","error");
+        }        
+        else if(empty($('nome_completo').val())){
+            exibirMensagem("Primeiro busque pelo usuário","error");
+        }
+        else{
+            usuario=$('#username_to_reset').val();
+        }
 
-        usuario=$('#nomeUsuario').val();
+        
         nome=$('#nomeCompleto').val();
         territorio=$('#territorio_id').val();
         permissoes=$('[name=perm_0]:checked').val();
@@ -23,8 +62,9 @@ $(document).ready(function() {
             }
         });
 
-        const $mensagem = $('#mensagemFeedback');
-        $mensagem.addClass('d-none').empty();
+        
+
+        
 
         $.ajax({
             url: '../processa_criar_usuario.php',
@@ -69,8 +109,8 @@ $(document).ready(function() {
             }
         });
     });
-     // Função para exibir a mensagem
-     function exibirMensagem(message, type) {
+    // Função para exibir a mensagem
+    function exibirMensagem(message, type) {
         // Limpa classes anteriores e oculta
         $mensagem.removeClass('d-none alert-success alert-danger alert-warning').empty();
         // Adiciona a classe de estilo e a mensagem
