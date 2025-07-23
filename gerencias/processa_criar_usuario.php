@@ -32,6 +32,26 @@ else{
             exit();
         }
     }
+    if(empty($_POST["usuario"]) || !is_numeric($_POST["usuario"])){
+        $mensagem = "Usuário inválido";
+        $dados = [];
+        $resposta = [
+            "mensagem" => $mensagem,
+            "dados" => $dados
+        ];
+        echo json_encode($resposta, JSON_PRETTY_PRINT);
+        exit();
+    }
+    if(empty($_POST["nome"])){
+        $mensagem = "Nome Completo inválido";
+        $dados = [];
+        $resposta = [
+            "mensagem" => $mensagem,
+            "dados" => $dados
+        ];
+        echo json_encode($resposta, JSON_PRETTY_PRINT);
+        exit();
+    }
     if($_POST["territorio"] == "0"){
         $mensagem = "Território inválido";
         $dados = [];
