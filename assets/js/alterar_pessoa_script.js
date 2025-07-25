@@ -1,7 +1,6 @@
 $(document).ready(function() {
     const $mensagem = $('#mensagemFeedback');
     $mensagem.addClass('d-none').empty();
-    let usuario ='';
 
     $('#pessoas').on('change', function(){
         $('#nome_pessoa').attr('disabled',true);
@@ -12,9 +11,10 @@ $(document).ready(function() {
 
         let id = $(this).val();
         $.ajax({
-            url: '../buscarPessoa.php',
+            url: '../Pessoa.php',
             method: 'POST', 
-            data: { id:id},
+            data: { id:id,
+                    tipo:'porId'},
             dataType: 'json',
             success: function(resposta) {
                 if(resposta.mensagem=="Sucesso"){ 
@@ -51,33 +51,54 @@ $(document).ready(function() {
     });
 
 
-    $('button.buscarUsuario').on('click', function(){
-        console.log($('#username_to_reset').val().length);
-        console.log($.isNumeric($("#username_to_reset").val()));
-        if ($('#username_to_reset').val().length<3 || !$.isNumeric($("#username_to_reset").val())){
-            exibirMensagem("Usuário inválido","error");
+    $('button#btnSalvar').on('click', function(){
+        let id = $('#pessoas').val();
+        if ($('#nome_pessoa').val().length<3 ){
+            exibirMensagem("Nome inválido","error");
+            setTimeout(function() {
+                $mensagem.addClass('d-none').empty();
+            }, 3000);
+        }
+        else if ($('#data_nascimento').val().lenght<10){
+            exibirMensagem("Data de nascimento inválida","error");
+            setTimeout(function() {
+                $mensagem.addClass('d-none').empty();
+            }, 3000);
+        }
+        else if ($('#sexo_id').val()==0){
+            exibirMensagem("Sexo inválido","error");
             setTimeout(function() {
                 $mensagem.addClass('d-none').empty();
             }, 3000);
         }
         else{
-            usuario =$('#username_to_reset').val();
+            let nome=$('#nome_pessoa').val();
+            let data_nascimento=$('#data_nascimento').val();
+            let id_sexo=$('#sexo_id').val();
+            let ativo= ($('#inativo').is(":checked")?0:1);
             $.ajax({
-                url: '../buscar_usuarios.php',
+                url: '../Pessoa.php',
                 method: 'POST', 
-                data: { tipo:'usuario',
-                        usuario:usuario},
+                data: { tipo: 'updateDados',
+                        nome:nome,
+                        data_nascimento:data_nascimento,
+                        id_sexo:id_sexo,
+                        id:id,
+                        ativo:ativo},
                 dataType: 'json',
                 success: function(resposta) {
                     if(resposta.mensagem=="Sucesso"){ 
-                        console.log(resposta.dados[0].ativo);
-                        if(resposta.dados[0].ativo ==0){
-                            exibirMensagem("Usuário desativado. Não é possível redefinir a senha","error");
-                        }
-                        else{
-                            $('#nome_completo').val(resposta.dados[0].nome);
-                            $('button.resetarSenha').removeAttr('disabled')
-                        } 
+                        exibirMensagem('Pessoa atualizada com sucesso',"success");
+                        $('#nome_pessoa').attr('disabled',true);
+                        $('#nome_pessoa').val('');
+                        $('#data_nascimento').attr('disabled',true);
+                        $('#data_nascimento').val('');
+                        $('#sexo_id').attr('disabled',true);
+                        $('#sexo_id').val(0);
+                        $('#inativo').attr('disabled',true);
+                        $('#inativo').prop('checked', false);
+                        $('#btnSalvar').attr('disabled',true);
+
                     }
                     else{
                         exibirMensagem(resposta.mensagem,"error");
@@ -95,49 +116,6 @@ $(document).ready(function() {
                 }
             });
         }
-    });
-    $('button.resetarSenha').on('click', function(){
-        if ($('#username_to_reset').val().length<3  || !$.isNumeric($("#username_to_reset").val())){
-            exibirMensagem("Usuário inválido","error");
-        }        
-        else if($('#nome_completo').val().length<1){
-            exibirMensagem("Primeiro busque pelo usuário","error");
-        }
-        else{
-            usuario=$('#username_to_reset').val();
-        }
-        setTimeout(function() {
-            $mensagem.addClass('d-none').empty();
-        }, 3000);
-
-        $.ajax({
-            url: '../processa_resetar_senha.php',
-            method: 'POST', 
-            data: { usuario:usuario},
-            dataType: 'json',
-            success: function(resposta) {
-                if(resposta.mensagem=="Sucesso"){
-                    exibirMensagem("Senha redefinida para Pmsbc@123","success");
-                    $('button.resetarSenha').attr('disabled',true);
-                    $('#username_to_reset').val('');
-                    $('#nome_completo').val('');
-                }
-                else{
-                    exibirMensagem(resposta.mensagem,"error");
-                }
-                setTimeout(function() {
-                    $mensagem.addClass('d-none').empty();
-                    $('button.resetarSenha').removeAttr('disabled')
-                }, 3000);
-
-            },
-            error: function() {            
-                exibirMensagem("Erro de execução","error");
-                setTimeout(function() {
-                    $mensagem.addClass('d-none').empty();
-                }, 3000);
-            }
-        });
     });
     // Função para exibir a mensagem
     function exibirMensagem(message, type) {

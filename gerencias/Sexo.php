@@ -1,9 +1,9 @@
 <?php
-//gerencias/buscarPessoa.php
+//gerencias/buscarSexo.php
 
 require_once 'conexaoBanco.php';
 
-class Pessoa{
+class Sexo{
     private $mysqli;
 
     // Construtor que recebe o objeto $mysqli
@@ -11,7 +11,7 @@ class Pessoa{
         $this->mysqli = $mysqli;
     }
     public function buscarTodos(){
-        $sql="SELECT id, nome FROM pessoas ORDER BY nome";
+        $sql="SELECT id, nome FROM sexos ORDER BY nome";
         $stmt = $this->mysqli->prepare($sql);
     
         if ($stmt->execute()) {
@@ -37,7 +37,7 @@ class Pessoa{
     }
 
     public function buscarTodosAtivos(){
-        $sql="SELECT id, nome FROM pessoas WHERE ativo=1 ORDER BY nome";
+        $sql="SELECT id, nome FROM sexos WHERE ativo=1 ORDER BY nome";
         $stmt = $this->mysqli->prepare($sql);
     
         if ($stmt->execute()) {
@@ -61,9 +61,8 @@ class Pessoa{
             }
         }
     }
-
     public function buscarPorId($id){
-        $sql="SELECT id, nome,data_nascimento,id_sexo, ativo FROM pessoas WHERE id=? ORDER BY nome";
+        $sql="SELECT id, nome FROM sexos WHERE id=? ORDER BY nome";
         $stmt = $this->mysqli->prepare($sql);
         $stmt -> bind_param('i', $id);
     
@@ -74,10 +73,7 @@ class Pessoa{
                 while($row = $resultado->fetch_assoc()) {
                     $territoriosEncontrados[] = [
                         'id' => $row['id'],
-                        'nome' => $row['nome'],
-                        'data_nascimento' => $row['data_nascimento'],
-                        'id_sexo' => $row['id_sexo'],
-                        'ativo' => $row['ativo']
+                        'nome' => $row['nome']
                     ];
                 }
                 $stmt->close();
@@ -99,25 +95,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     global $mysqli; // Assume que $mysqli está disponível globalmente após o require_once
 
     $pessoa = new Pessoa($mysqli);
-
-    // Verifica se o ID foi enviado via POST
-    if (isset($_POST['id'])) {
-        $id = filter_var($_POST['id'], FILTER_VALIDATE_INT); // Valida e sanitiza o ID
-
-        if ($id !== false && $id > 0) {
-            echo $pessoa->buscarPorId($id);
-        } else {
-            echo json_encode(['mensagem' => 'ID inválido fornecido.', 'dados' => []]);
-        }
-    } 
-    // Se você ainda precisar de outras ações (buscarTodos, buscarTodosAtivos) via POST,
-    // pode adicionar uma lógica para 'tipo' aqui, mas o foco da pergunta é 'buscarPorId'.
-    // Exemplo:
-    // else if (isset($_POST['tipo']) && $_POST['tipo'] === 'todos') {
-    //     echo $pessoa->buscarTodos();
-    // }
-    else {
-        echo json_encode(['mensagem' => 'Nenhum ID ou tipo de busca especificado.', 'dados' => []]);
+    if (isset($_POST['tipo'])) {
+        $tipo = $_POST['tipo'];
     }
+    else{
+        echo json_encode(['mensagem' => 'Falha no tipo', 'dados' => []]);
+        exit();
+    }
+    
+    if($tipo=="porId"){
+        // Verifica se o ID foi enviado via POST
+        if (isset($_POST['id'])) {
+            $id = filter_var($_POST['id'], FILTER_VALIDATE_INT); // Valida e sanitiza o ID
+
+            if ($id !== false && $id > 0) {
+                echo $pessoa->buscarPorId($id);
+            } else {
+                echo json_encode(['mensagem' => 'ID inválido fornecido.', 'dados' => []]);
+            }
+        }
+        else{
+            echo json_encode(['mensagem' => 'Nenhum ID ou tipo de busca especificado.', 'dados' => []]);
+        }
+    }
+    else if($tipo=="criar"){
+        
+    }
+    
 }
 ?>

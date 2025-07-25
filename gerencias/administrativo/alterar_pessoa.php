@@ -7,8 +7,8 @@ if (!isset($_SESSION['usuario']['id'])) {
     exit();
 }
 require_once '../conexaoBanco.php';
-require_once '../buscarPessoa.php';
-require_once '../buscarSexo.php';
+require_once '../Pessoa.php';
+require_once '../Sexo.php';
 
 $classePessoa = new Pessoa($mysqli);
 
@@ -96,25 +96,6 @@ if($jsonDecodificadoSexo['mensagem']=="Sucesso"){
         <div class="row">
             <div class="col-md-5">
                 <button class="btn btn-primary mt-3" id="btnSalvar" disabled><i class="fas fa-save"></i> Salvar Alterações</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Confirmação de Desativação -->
-    <div class="modal fade" id="confirmDeactivateModal" tabindex="-1" aria-labelledby="confirmDeactivateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="confirmDeactivateModalLabel">Confirmar Desativação</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="deactivate-modal-message"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                    <button type="button" class="btn btn-danger" id="confirm-deactivate-btn"><i class="fas fa-trash-alt"></i> Sim, Desativar</button>
-                </div>
             </div>
         </div>
     </div>

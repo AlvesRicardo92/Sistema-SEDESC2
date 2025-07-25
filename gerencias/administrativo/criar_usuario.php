@@ -7,7 +7,7 @@ if (!isset($_SESSION['usuario']['id'])) {
     exit();
 }
 require_once '../conexaoBanco.php';
-require_once '../buscarTerritorio.php';
+require_once '../Territorio.php';
 
 $classeTerritorio = new Territorio($mysqli);
 
