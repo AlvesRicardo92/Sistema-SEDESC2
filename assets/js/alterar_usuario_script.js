@@ -16,7 +16,6 @@ $(document).ready(function() {
                 dataType: 'json',
                 success: function(resposta) {
                     if(resposta.mensagem=="Sucesso"){
-                        console.log(resposta.dados);
                         $('#nomeCompleto').val(resposta.dados[0].nome);
                         $('#territorio_id').val(resposta.dados[0].territorio_id);
                         if(resposta.dados[0].ativo==1){
@@ -32,24 +31,24 @@ $(document).ready(function() {
                             $('#primeiro_acesso').prop('checked',false);
                         }
                         let arrayPermissoes = Array.from(resposta.dados[0].permissoes);
-                        $('input[name="perm_0"][value="' + arrayPermissoes[1] + '"]').prop('checked',true);
-                        $('input[name="perm_1"][value="' + arrayPermissoes[2] + '"]').prop('checked',true);
-                        $('input[name="perm_2"][value="' + arrayPermissoes[3] + '"]').prop('checked',true);
-                        $('input[name="perm_3"][value="' + arrayPermissoes[4] + '"]').prop('checked',true);
-                        $('input[name="perm_4"][value="' + arrayPermissoes[5] + '"]').prop('checked',true);
-                        if(arrayPermissoes[7]==1){
+                        $('input[name="perm_0"][value="' + arrayPermissoes[0] + '"]').prop('checked',true);
+                        $('input[name="perm_1"][value="' + arrayPermissoes[1] + '"]').prop('checked',true);
+                        $('input[name="perm_2"][value="' + arrayPermissoes[2] + '"]').prop('checked',true);
+                        $('input[name="perm_3"][value="' + arrayPermissoes[3] + '"]').prop('checked',true);
+                        $('input[name="perm_4"][value="' + arrayPermissoes[4] + '"]').prop('checked',true);
+                        if(arrayPermissoes[6]==1){
                             $('#perm_6_criar_usuario').prop('checked',true);
                         }
                         else{
                             $('#perm_6_criar_usuario').prop('checked',false);
                         }
-                        if(arrayPermissoes[8]==1){
+                        if(arrayPermissoes[7]==1){
                             $('#perm_7_resetar_senha').prop('checked',true);
                         }
                         else{
                             $('#perm_7_resetar_senha').prop('checked',false);
                         }
-                        if(arrayPermissoes[9]==1){
+                        if(arrayPermissoes[8]==1){
                             $('#perm_8_alterar_pessoa').prop('checked',true);
                         }
                         else{
@@ -137,24 +136,24 @@ $(document).ready(function() {
         }
 
         if($('#perm_6_criar_usuario').is(':checked')) {
-            permissoesAdm+=1;
+            permissoesAdm+='1';
         }
         else{
-            permissoesAdm=0;
+            permissoesAdm+='0';
         }
 
         if($('#perm_7_resetar_senha').is(':checked')) {
-            permissoesAdm=1;
+            permissoesAdm+='1';
         }
         else{
-            permissoesAdm=0;
+            permissoesAdm+='0';
         }
 
         if($('#perm_8_alterar_pessoa').is(':checked')) {
-            permissoesAdm=1;
+            permissoesAdm+='1';
         }
         else{
-            permissoesAdm=0;
+            permissoesAdm+='0';
         }
 
         let id = $('#btnSalvar').data('id');

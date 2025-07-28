@@ -184,16 +184,11 @@ class Usuario{
     }
     public function updateDados($id,$nome,$permissoes,$territorio,$permissoesAdm,$ativo,$primeiro_acesso){
         $usuarioLogado = $_SESSION['usuario']['id'];
-        echo $permissoes;
-        echo $permissoesAdm;
         if (strpos($permissoesAdm, '1') !== false) {
             $permissoes=$permissoes.'1'.$permissoesAdm;
         } else {
             $permissoes=$permissoes.'0'.$permissoesAdm;
-        }
-        echo $permissoes;
-        exit();
-        
+        }        
 
         $sql="UPDATE
                   usuarios
@@ -325,6 +320,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($_POST['nome'])) {
             $nome=$_POST['nome'];
+            $nome = removerAcentos($nome);
+            $nome = preg_replace('/\s+/', ' ', $nome);
+            $nome = trim($nome);
+            $nome = mb_strtoupper($nome, 'UTF-8');
         }
         else{
             echo json_encode(['mensagem' => 'Erro no nome.', 'dados' => []]);
@@ -380,5 +379,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                           $primeiro_acesso);
     }
     
+}
+function removerAcentos(string $text): string
+{
+    $search = [
+        'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß',
+        'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ð', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'þ', 'ÿ',
+        "'"
+    ];
+    $replace = [
+        'A', 'A', 'A', 'A', 'A', 'A', 'AE', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'D', 'N', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y', 'TH', 'ss',
+        'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'c', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'd', 'n', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'th', 'y',
+        " "
+    ];
+    $text = str_replace($search, $replace, $text);
+    
+    return $text;
 }
 ?>
