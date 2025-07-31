@@ -7,25 +7,8 @@ if (!isset($_SESSION['usuario']['id'])) {
     exit();
 }
 
-// CORREÇÃO DOS CAMINHOS DO REQUIRE
-// Se criar_avisos.php está em 'gerencias/administrativo/',
-// e conexaoBanco.php está em 'gerencias/', então suba um nível.
 require_once __DIR__ . "/../conexaoBanco.php"; // Inclui o arquivo de conexão com o banco de dados
 
-
-$territorios = [];
-// Busca os territórios para preencher o select
-$sql_territorios = "SELECT id, nome FROM territorios_ct WHERE ativo = 1 ORDER BY nome ASC";
-$resultado_territorios = $mysqli->query($sql_territorios);
-if ($resultado_territorios) {
-    while ($row = $resultado_territorios->fetch_assoc()) {
-        $territorios[] = $row;
-    }
-    $resultado_territorios->free();
-} else {
-    // Em caso de erro na consulta de territórios, logar ou exibir mensagem
-    error_log("Erro ao buscar territórios: " . $mysqli->error);
-}
 ?>
 
 <!DOCTYPE html>
@@ -140,80 +123,7 @@ if ($resultado_territorios) {
                 }
             });
 
-            // Referência à div de mensagem
-            const $avisoMessage = $('#avisoMessage');
-
-            // Função para exibir a mensagem
-            function showAvisoMessage(message, type) {
-                $avisoMessage.removeClass('d-none alert-success alert-danger').empty();
-                $avisoMessage.html(message); // Usa .html() para permitir formatação
-                if (type === 'success') {
-                    $avisoMessage.addClass('alert-success');
-                } else if (type === 'error') {
-                    $avisoMessage.addClass('alert-danger');
-                }
-                $avisoMessage.removeClass('d-none').slideDown();
-            }
-
-            // Evento de submissão do formulário
-            $('#formCriarAviso').on('submit', function(e) {
-                e.preventDefault(); // Previne o envio padrão do formulário
-
-                // Oculta a mensagem anterior
-                $avisoMessage.addClass('d-none').empty();
-
-                // Obtém o conteúdo HTML do Quill e o coloca no campo hidden
-                const avisoContentHtml = quill.root.innerHTML;
-                $('#hiddenAvisoContent').val(avisoContentHtml);
-
-                // Cria um objeto FormData para lidar com o upload de arquivo e outros dados
-                const formData = new FormData(this);
-                formData.append('acao', 'add_aviso');
-                // A 'descricao' já está no formData via o campo hidden #hiddenAvisoContent
-
-                // Desabilita o botão de salvar para evitar múltiplos cliques
-                $('#btnSalvarAviso').prop('disabled', true).text('Salvando...');
-
-                $.ajax({
-                    url: '../processa_avisos.php', // Script PHP que processará os dados
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // Necessário para FormData
-                    contentType: false, // Necessário para FormData
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response && response.status === 'sucesso') {
-                            showAvisoMessage('Aviso criado com sucesso!', 'success');
-                            // Limpa o formulário após o sucesso
-                            $('#formCriarAviso')[0].reset();
-                            quill.setContents([]); // Limpa o conteúdo do editor Quill
-                            // Opcional: Redirecionar para o dashboard ou listar avisos
-                            setTimeout(function() {
-                                window.location.href = 'dashboard.php';
-                            }, 2000); // Redireciona após 2 segundos
-                        } else {
-                            showAvisoMessage('Erro ao criar aviso: ' + (response ? response.mensagem : 'Resposta inválida do servidor.'), 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        let errorMessage = 'Erro de comunicação com o servidor ao criar aviso.';
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            if (errorResponse && errorResponse.mensagem) {
-                                errorMessage = errorResponse.mensagem;
-                            }
-                        } catch (e) {
-                            console.error("Erro ao analisar resposta de erro:", e, xhr.responseText);
-                        }
-                        showAvisoMessage(errorMessage, 'error');
-                    },
-                    complete: function() {
-                        // Reabilita o botão de salvar
-                        $('#btnSalvarAviso').prop('disabled', false).text('Salvar Aviso');
-                    }
-                });
-            });
-        });
+            
     </script>
 </body>
 </html>

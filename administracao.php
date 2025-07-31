@@ -21,6 +21,7 @@ $canAccessResetarSenha = substr($permissoes, 8, 1);    // Ex: 8º caractere
 $canAccessAlterarPessoa = substr($permissoes, 9, 1);   // Ex: 9º caractere
 $canAccessAlterarUsuario = substr($permissoes, 10, 1);   // Ex: 10º caractere
 $canAccessAvisos = substr($permissoes, 10, 1);   // Ex: 10º caractere
+$canAccessMigrarProcedimento = substr($permissoes, 10, 1);   // Ex: 10º caractere
 
 // Adicione mais variáveis conforme necessário para outras opções do menu lateral
 ?>
@@ -70,6 +71,13 @@ $canAccessAvisos = substr($permissoes, 10, 1);   // Ex: 10º caractere
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-square-fill" style="margin-right:8px" viewBox="0 0 16 16">
                         <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                     </svg> Avisos
+                </a>
+                <?php endif; ?>
+                <?php if ($canAccessMigrarProcedimento > 0): // Exemplo: permissão > 0 para Alterar Usuário ?>
+                <a href="gerencias/administrativo/migracao_procedimento.php" target="admin_iframe" class="list-group-item list-group-item-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+                    </svg> Migrar Procedimento
                 </a>
                 <?php endif; ?>
 
