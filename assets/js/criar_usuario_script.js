@@ -24,6 +24,7 @@ $(document).ready(function() {
                 permissoesAdm+='0';
             }
         });
+        console.log(permissoesAdm);
 
         $.ajax({
             url: '../processa_criar_usuario.php',
@@ -50,6 +51,9 @@ $(document).ready(function() {
                     $('#perm_6_criar_usuario').prop('checked', false);
                     $('#perm_7_resetar_senha').prop('checked', false);
                     $('#perm_8_alterar_pessoa').prop('checked', false);
+                    $('#perm_9_alterar_usuario').prop('checked', false);
+                    $('#perm_10_avisos').prop('checked', false);
+                    $('#perm_11_migrar_procedimento').prop('checked', false);
                 }
                 else{
                     exibirMensagem(resposta.mensagem,"error");

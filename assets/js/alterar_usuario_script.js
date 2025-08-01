@@ -31,28 +31,47 @@ $(document).ready(function() {
                             $('#primeiro_acesso').prop('checked',false);
                         }
                         let arrayPermissoes = Array.from(resposta.dados[0].permissoes);
-                        $('input[name="perm_0"][value="' + arrayPermissoes[0] + '"]').prop('checked',true);
-                        $('input[name="perm_1"][value="' + arrayPermissoes[1] + '"]').prop('checked',true);
-                        $('input[name="perm_2"][value="' + arrayPermissoes[2] + '"]').prop('checked',true);
-                        $('input[name="perm_3"][value="' + arrayPermissoes[3] + '"]').prop('checked',true);
-                        $('input[name="perm_4"][value="' + arrayPermissoes[4] + '"]').prop('checked',true);
-                        if(arrayPermissoes[6]==1){
+                        console.log(arrayPermissoes);
+                        $('input[name="perm_0"][value="' + arrayPermissoes[1] + '"]').prop('checked',true);
+                        $('input[name="perm_1"][value="' + arrayPermissoes[2] + '"]').prop('checked',true);
+                        $('input[name="perm_2"][value="' + arrayPermissoes[3] + '"]').prop('checked',true);
+                        $('input[name="perm_3"][value="' + arrayPermissoes[4] + '"]').prop('checked',true);
+                        $('input[name="perm_4"][value="' + arrayPermissoes[5] + '"]').prop('checked',true);
+                        if(arrayPermissoes[7]==1){
                             $('#perm_6_criar_usuario').prop('checked',true);
                         }
                         else{
                             $('#perm_6_criar_usuario').prop('checked',false);
                         }
-                        if(arrayPermissoes[7]==1){
+                        if(arrayPermissoes[8]==1){
                             $('#perm_7_resetar_senha').prop('checked',true);
                         }
                         else{
                             $('#perm_7_resetar_senha').prop('checked',false);
                         }
-                        if(arrayPermissoes[8]==1){
+                        if(arrayPermissoes[9]==1){
                             $('#perm_8_alterar_pessoa').prop('checked',true);
                         }
                         else{
                             $('#perm_8_alterar_pessoa').prop('checked',false);
+                        }
+                        if(arrayPermissoes[10]==1){
+                            $('#perm_9_alterar_usuario').prop('checked',true);
+                        }
+                        else{
+                            $('#perm_9_alterar_usuario').prop('checked',false);
+                        }
+                        if(arrayPermissoes[11]==1){
+                            $('#perm_10_avisos').prop('checked',true);
+                        }
+                        else{
+                            $('#perm_10_avisos').prop('checked',false);
+                        }
+                        if(arrayPermissoes[12]==1){
+                            $('#perm_11_migrar_procedimento').prop('checked',true);
+                        }
+                        else{
+                            $('#perm_11_migrar_procedimento').prop('checked',false);
                         }
                         $('#nomeCompleto').removeAttr('disabled');
                         $('#territorio_id').removeAttr('disabled');
@@ -66,6 +85,9 @@ $(document).ready(function() {
                         $('#perm_6_criar_usuario').removeAttr('disabled');
                         $('#perm_7_resetar_senha').removeAttr('disabled');
                         $('#perm_8_alterar_pessoa').removeAttr('disabled');
+                        $('#perm_9_alterar_usuario').removeAttr('disabled');
+                        $('#perm_10_avisos').removeAttr('disabled');
+                        $('#perm_11_migrar_procedimento').removeAttr('disabled');
                         $('#btnSalvar').removeAttr('disabled');
                         $('#btnSalvar').data('id', resposta.dados[0].id);
 
@@ -85,6 +107,9 @@ $(document).ready(function() {
                         $('#perm_6_criar_usuario').attr('disabled',true);
                         $('#perm_7_resetar_senha').attr('disabled',true);
                         $('#perm_8_alterar_pessoa').attr('disabled',true);
+                        $('#perm_9_alterar_usuario').attr('disabled',true);
+                        $('#perm_10_avisos').attr('disabled',true);
+                        $('#perm_11_migrar_procedimento').attr('disabled',true);
                         $('#btnSalvar').attr('disabled',true);
                     }
                     setTimeout(function() {
@@ -110,9 +135,6 @@ $(document).ready(function() {
         let primeiro_acesso;
         let permissoes;
         let permissoesAdm='';
-        let criar_usuario;
-        let resetar_senha;
-        let alterar_pessoa;
 
         nome=$('#nomeCompleto').val();
         territorio=$('#territorio_id').val();
@@ -121,6 +143,7 @@ $(document).ready(function() {
         permissoes+=$('[name=perm_2]:checked').val();
         permissoes+=$('[name=perm_3]:checked').val();
         permissoes+=$('[name=perm_4]:checked').val();
+        permissoes="E"+permissoes;
         
         if($('#ativo').is(':checked')) {
             ativo=1;
@@ -150,6 +173,24 @@ $(document).ready(function() {
         }
 
         if($('#perm_8_alterar_pessoa').is(':checked')) {
+            permissoesAdm+='1';
+        }
+        else{
+            permissoesAdm+='0';
+        }
+        if($('#perm_9_alterar_usuario').is(':checked')) {
+            permissoesAdm+='1';
+        }
+        else{
+            permissoesAdm+='0';
+        }
+        if($('#perm_10_avisos').is(':checked')) {
+            permissoesAdm+='1';
+        }
+        else{
+            permissoesAdm+='0';
+        }
+        if($('#perm_11_migrar_procedimento').is(':checked')) {
             permissoesAdm+='1';
         }
         else{
@@ -187,6 +228,9 @@ $(document).ready(function() {
                     $('#perm_6_criar_usuario').prop('checked', false);
                     $('#perm_7_resetar_senha').prop('checked', false);
                     $('#perm_8_alterar_pessoa').prop('checked', false);
+                    $('#perm_9_alterar_usuario').prop('checked', false);
+                    $('#perm_10_avisos').prop('checked', false);
+                    $('#perm_11_migrar_procedimento').prop('checked', false);
 
                     $('#nomeCompleto').attr('disabled',true);
                     $('#territorio_id').attr('disabled',true);
@@ -200,6 +244,9 @@ $(document).ready(function() {
                     $('#perm_6_criar_usuario').attr('disabled',true);
                     $('#perm_7_resetar_senha').attr('disabled',true);
                     $('#perm_8_alterar_pessoa').attr('disabled',true);
+                    $('#perm_9_alterar_usuario').attr('disabled',true);
+                    $('#perm_10_avisos').attr('disabled',true);
+                    $('#perm_11_migrar_procedimento').attr('disabled',true);
                     $('#btnSalvar').attr('disabled',true);
                 }
                 else{

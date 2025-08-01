@@ -228,11 +228,23 @@ if($jsonDecodificado['mensagem']=="Sucesso"){
                     <label class="form-check-label" for="perm_8_alterar_pessoa">Alterar Pessoa</label>
                 </div>
             </div>
+            <div class="criarUsuario admin-checkbox-grid mt-3">
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_9_alterar_usuario" data-position="9" value="1" disabled>
+                    <label class="form-check-label" for="perm_9_alterar_usuario">Alterar Usuário</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_10_avisos" data-position="10" value="1" disabled>
+                    <label class="form-check-label" for="perm_10_avisos">Avisos</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_11_migrar_procedimento" data-position="11" value="1" disabled>
+                    <label class="form-check-label" for="perm_11_migrar_procedimento">Migrar Procedimento</label>
+                </div>
+            </div>
         </div>
-
         <div class="alert d-none mensagemFeedback" role="alert"></div>
-
-        <button type="submit" class="btn btn-primary mt-3" id="btnSalvar" data-id="" disabled><i class="fas fa-save"></i> Salvar Alterações</button>
+        <button class="btn btn-primary mt-3" id="btnSalvar" data-id="" disabled><i class="fas fa-save"></i> Salvar Alterações</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

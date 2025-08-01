@@ -20,8 +20,8 @@ $canAccessCriarUsuario = substr($permissoes, 7, 1);     // Ex: 7º caractere
 $canAccessResetarSenha = substr($permissoes, 8, 1);    // Ex: 8º caractere
 $canAccessAlterarPessoa = substr($permissoes, 9, 1);   // Ex: 9º caractere
 $canAccessAlterarUsuario = substr($permissoes, 10, 1);   // Ex: 10º caractere
-$canAccessAvisos = substr($permissoes, 10, 1);   // Ex: 10º caractere
-$canAccessMigrarProcedimento = substr($permissoes, 10, 1);   // Ex: 10º caractere
+$canAccessAvisos = substr($permissoes, 11, 1);   // Ex: 10º caractere
+$canAccessMigrarProcedimento = substr($permissoes, 12, 1);   // Ex: 10º caractere
 
 // Adicione mais variáveis conforme necessário para outras opções do menu lateral
 ?>

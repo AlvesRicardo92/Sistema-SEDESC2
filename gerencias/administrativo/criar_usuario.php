@@ -212,6 +212,20 @@ if($jsonDecodificado['mensagem']=="Sucesso"){
                     <label class="form-check-label" for="perm_8_alterar_pessoa">Alterar Pessoa</label>
                 </div>
             </div>
+            <div class="criarUsuario admin-checkbox-grid mt-3">
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_9_alterar_usuario" data-position="9" value="1">
+                    <label class="form-check-label" for="perm_9_alterar_usuario">Alterar Usuário</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_10_avisos" data-position="10" value="1">
+                    <label class="form-check-label" for="perm_10_avisos">Avisos</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input admin-perm-checkbox" type="checkbox" id="perm_11_migrar_procedimento" data-position="11" value="1">
+                    <label class="form-check-label" for="perm_11_migrar_procedimento">Migrar Procedimento</label>
+                </div>
+            </div>
         </div>
         
         <div id="mensagemFeedback" class="alert d-none" role="alert">
